@@ -44,8 +44,8 @@ hido.bin \
 all: hido.elf secondary-outputs
 
 # Tool invocations
-hido.elf: $(OBJS) $(USER_OBJS) C:\stm32_toolchain\workspace_STM32ide\hido\STM32F102RBTX_FLASH.ld
-	arm-none-eabi-gcc -o "hido.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\stm32_toolchain\workspace_STM32ide\hido\STM32F102RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="hido.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+hido.elf: $(OBJS) $(USER_OBJS) C:\stm32_toolchain\workspace_STM32ide\hido\02_firmware\STM32F102RBTX_FLASH.ld
+	arm-none-eabi-gcc -o "hido.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\stm32_toolchain\workspace_STM32ide\hido\02_firmware\STM32F102RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="hido.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

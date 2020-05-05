@@ -58,7 +58,7 @@ uint8_t HID_Buffer[4];
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-#define CLICK_REPORT_SIZE 4
+#define CLICK_REPORT_SIZE 1
 uint8_t click_report[CLICK_REPORT_SIZE] = {0};
 /* USER CODE END PFP */
 
@@ -123,7 +123,7 @@ int main(void)
 
   HAL_Delay(200);
 
-     /* USER CODE END WHILE */
+    /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   }
