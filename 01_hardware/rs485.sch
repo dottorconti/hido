@@ -1,0 +1,260 @@
+EESchema Schematic File Version 4
+LIBS:Jopen-cache
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 2 3
+Title "Hido"
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L power:+5V #PWR?
+U 1 1 5E6FD398
+P 6000 2700
+AR Path="/5E6FD398" Ref="#PWR?"  Part="1" 
+AR Path="/5E6F8A49/5E6FD398" Ref="#PWR0110"  Part="1" 
+F 0 "#PWR0110" H 6000 2550 50  0001 C CNN
+F 1 "+5V" H 6015 2873 50  0000 C CNN
+F 2 "" H 6000 2700 50  0001 C CNN
+F 3 "" H 6000 2700 50  0001 C CNN
+	1    6000 2700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6000 2700 6000 2775
+$Comp
+L power:GND #PWR?
+U 1 1 5E6FD39F
+P 6000 4275
+AR Path="/5E6FD39F" Ref="#PWR?"  Part="1" 
+AR Path="/5E6F8A49/5E6FD39F" Ref="#PWR0111"  Part="1" 
+F 0 "#PWR0111" H 6000 4025 50  0001 C CNN
+F 1 "GND" H 6005 4102 50  0000 C CNN
+F 2 "" H 6000 4275 50  0001 C CNN
+F 3 "" H 6000 4275 50  0001 C CNN
+	1    6000 4275
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 5E6FD3A5
+P 6700 3375
+AR Path="/5E6FD3A5" Ref="R?"  Part="1" 
+AR Path="/5E6F8A49/5E6FD3A5" Ref="R43"  Part="1" 
+F 0 "R43" V 6575 3450 50  0000 C CNN
+F 1 "0R" V 6575 3275 50  0000 C CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 6630 3375 50  0001 C CNN
+F 3 "~" H 6700 3375 50  0001 C CNN
+	1    6700 3375
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 5E6FD3AB
+P 6700 3675
+AR Path="/5E6FD3AB" Ref="R?"  Part="1" 
+AR Path="/5E6F8A49/5E6FD3AB" Ref="R44"  Part="1" 
+F 0 "R44" V 6825 3675 50  0000 C CNN
+F 1 "0R" V 6584 3675 50  0000 C CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 6630 3675 50  0001 C CNN
+F 3 "~" H 6700 3675 50  0001 C CNN
+	1    6700 3675
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	5225 3675 5225 3575
+Wire Wire Line
+	5225 3575 4975 3575
+Wire Wire Line
+	5225 3375 5225 3475
+$Comp
+L Device:R R?
+U 1 1 5E6FD3CA
+P 5350 4100
+AR Path="/5E6FD3CA" Ref="R?"  Part="1" 
+AR Path="/5E6F8A49/5E6FD3CA" Ref="R42"  Part="1" 
+F 0 "R42" V 5475 4100 50  0000 C CNN
+F 1 "10k" V 5234 4100 50  0000 C CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 5280 4100 50  0001 C CNN
+F 3 "~" H 5350 4100 50  0001 C CNN
+	1    5350 4100
+	-1   0    0    1   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5E6FD3D0
+P 5350 4325
+AR Path="/5E6FD3D0" Ref="#PWR?"  Part="1" 
+AR Path="/5E6F8A49/5E6FD3D0" Ref="#PWR0112"  Part="1" 
+F 0 "#PWR0112" H 5350 4075 50  0001 C CNN
+F 1 "GND" H 5355 4152 50  0000 C CNN
+F 2 "" H 5350 4325 50  0001 C CNN
+F 3 "" H 5350 4325 50  0001 C CNN
+	1    5350 4325
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5350 4250 5350 4325
+$Comp
+L Device:R R?
+U 1 1 5E6FD3DB
+P 5375 3100
+AR Path="/5E6FD3DB" Ref="R?"  Part="1" 
+AR Path="/5E6F8A49/5E6FD3DB" Ref="R38"  Part="1" 
+F 0 "R38" V 5500 3100 50  0000 C CNN
+F 1 "10k" V 5259 3100 50  0000 C CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 5305 3100 50  0001 C CNN
+F 3 "~" H 5375 3100 50  0001 C CNN
+	1    5375 3100
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 5E6FD3E1
+P 4975 3100
+AR Path="/5E6FD3E1" Ref="R?"  Part="1" 
+AR Path="/5E6F8A49/5E6FD3E1" Ref="R37"  Part="1" 
+F 0 "R37" V 5100 3100 50  0000 C CNN
+F 1 "10k" V 4859 3100 50  0000 C CNN
+F 2 "Resistor_SMD:R_0603_1608Metric" V 4905 3100 50  0001 C CNN
+F 3 "~" H 4975 3100 50  0001 C CNN
+	1    4975 3100
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	4975 2950 4975 2875
+Wire Wire Line
+	4975 2875 5175 2875
+Wire Wire Line
+	5375 2875 5375 2950
+Wire Wire Line
+	5175 2875 5175 2775
+Wire Wire Line
+	5175 2775 6000 2775
+Connection ~ 5175 2875
+Wire Wire Line
+	5175 2875 5375 2875
+Connection ~ 6000 2775
+Wire Wire Line
+	5375 3250 5375 3375
+Connection ~ 5375 3375
+Wire Wire Line
+	5375 3375 5225 3375
+Wire Wire Line
+	4975 3250 4975 3575
+Connection ~ 4975 3575
+Text HLabel 7475 3375 2    50   BiDi ~ 0
+rs485_B
+Text HLabel 7475 3675 2    50   BiDi ~ 0
+rs485_A
+Text HLabel 4000 3575 0    50   Input ~ 0
+USART_TX_JVC
+Text HLabel 4000 3475 0    50   Output ~ 0
+USART_RX_JVC
+Wire Wire Line
+	6850 3375 7100 3375
+Wire Wire Line
+	6850 3675 7100 3675
+$Comp
+L Device:C C11
+U 1 1 5E65C1BE
+P 8325 3050
+F 0 "C11" H 8440 3096 50  0000 L CNN
+F 1 "100nF" H 8440 3005 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric" H 8363 2900 50  0001 C CNN
+F 3 "~" H 8325 3050 50  0001 C CNN
+	1    8325 3050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6000 2775 8325 2775
+Wire Wire Line
+	8325 2775 8325 2900
+$Comp
+L power:GND #PWR?
+U 1 1 5E65F339
+P 8325 3350
+AR Path="/5E65F339" Ref="#PWR?"  Part="1" 
+AR Path="/5E6F8A49/5E65F339" Ref="#PWR0132"  Part="1" 
+F 0 "#PWR0132" H 8325 3100 50  0001 C CNN
+F 1 "GND" H 8330 3177 50  0000 C CNN
+F 2 "" H 8325 3350 50  0001 C CNN
+F 3 "" H 8325 3350 50  0001 C CNN
+	1    8325 3350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8325 3350 8325 3200
+$Comp
+L Device:R R?
+U 1 1 5E660A8F
+P 7100 3525
+AR Path="/5E660A8F" Ref="R?"  Part="1" 
+AR Path="/5E6F8A49/5E660A8F" Ref="R45"  Part="1" 
+F 0 "R45" V 7225 3525 50  0000 C CNN
+F 1 "120R" V 6984 3525 50  0000 C CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 7030 3525 50  0001 C CNN
+F 3 "~" H 7100 3525 50  0001 C CNN
+	1    7100 3525
+	-1   0    0    1   
+$EndComp
+Connection ~ 7100 3675
+Wire Wire Line
+	7100 3675 7475 3675
+Connection ~ 7100 3375
+Wire Wire Line
+	7100 3375 7475 3375
+Wire Wire Line
+	4000 3475 5225 3475
+Wire Wire Line
+	4000 3575 4975 3575
+Text HLabel 4000 3800 0    50   Input ~ 0
+USART_EN_JVC
+Wire Wire Line
+	6000 2775 6000 2975
+Wire Wire Line
+	6550 3375 6400 3375
+Wire Wire Line
+	6550 3675 6400 3675
+Wire Wire Line
+	6000 4075 6000 4275
+Wire Wire Line
+	5600 3675 5225 3675
+Wire Wire Line
+	5600 3375 5375 3375
+$Comp
+L Interface_UART:MAX481E U?
+U 1 1 5E6FD38A
+P 6000 3475
+AR Path="/5E6FD38A" Ref="U?"  Part="1" 
+AR Path="/5E6F8A49/5E6FD38A" Ref="U3"  Part="1" 
+F 0 "U3" H 6300 2875 50  0000 C CNN
+F 1 "SN65HVD1786D" H 6000 4065 50  0000 C CNN
+F 2 "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm" H 6000 2775 50  0001 C CNN
+F 3 "https://datasheets.maximintegrated.com/en/ds/MAX1487E-MAX491E.pdf" H 6000 3525 50  0001 C CNN
+	1    6000 3475
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5600 3475 5350 3475
+Wire Wire Line
+	5600 3575 5550 3575
+Wire Wire Line
+	5550 3575 5550 3800
+Wire Wire Line
+	5350 3800 4000 3800
+Connection ~ 5350 3800
+Wire Wire Line
+	5350 3950 5350 3800
+Wire Wire Line
+	5350 3475 5350 3800
+Wire Wire Line
+	5350 3800 5550 3800
+$EndSCHEMATC

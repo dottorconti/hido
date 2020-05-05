@@ -1,0 +1,8 @@
+.metadata/
+*.dbk
+*.lib*.d
+*.su
+*bak
+*.[oa]
+*.d
+*.o
