@@ -2,9 +2,9 @@
 Arcade keyboard with STM32 Cube IDE
 
 Features:
-- Emulated Keyboard HID
-- Emulated Mouse HID
-- Emulated Joystick HID
+- Emulate Keyboard HID
+- Emulate Mouse HID
+- Emulate Joystick HID
 - JVS to USB converter
 
 
