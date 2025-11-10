@@ -41,15 +41,31 @@ extern "C" {
 /** @defgroup USBD_HID_Exported_Defines
   * @{
   */
-/* Configuration for Arcade Keyboard - NKRO support */
-#define USE_DIRECT_BUTTONS            /* Comment this to enable JVS mode */
+/* ===== MODE SELECTION ===== */
+/* Uncomment ONE of these modes: */
+#define USE_KEYBOARD_MODE      /* NKRO Keyboard with 96 keys */
+// #define USE_JOYSTICK_MODE   /* Dual Joystick (2 players) */
+// #define USE_JVS_MODE        /* JVS/RS485 Protocol */
 
 #define HID_EPIN_ADDR                 0x81U
-#define HID_EPIN_SIZE                 0x10U  /* Increased for NKRO keyboard (16 bytes) */
+
+#ifdef USE_JOYSTICK_MODE
+#define HID_EPIN_SIZE                 0x05U  /* Joystick report: 5 bytes */
+#else
+#define HID_EPIN_SIZE                 0x10U  /* NKRO keyboard: 16 bytes */
+#endif
 
 #define USB_HID_CONFIG_DESC_SIZ       34U
 #define USB_HID_DESC_SIZ              9U
-#define HID_KEYBOARD_REPORT_DESC_SIZE 63U    /* NKRO Keyboard descriptor */
+
+#ifdef USE_JOYSTICK_MODE
+#define HID_REPORT_DESC_SIZE          54U    /* Joystick descriptor */
+#else
+#define HID_REPORT_DESC_SIZE          63U    /* NKRO Keyboard descriptor */
+#endif
+
+/* Legacy define for compatibility */
+#define HID_KEYBOARD_REPORT_DESC_SIZE HID_REPORT_DESC_SIZE
 
 #define HID_DESCRIPTOR_TYPE           0x21U
 #define HID_REPORT_DESC               0x22U

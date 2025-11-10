@@ -32,9 +32,12 @@
 #include "usbd_desc.h"
 #include "usbd_hid.h"
 
-#ifdef USE_DIRECT_BUTTONS
+/* Mode-specific includes */
+#ifdef USE_KEYBOARD_MODE
 #include "arcade_keyboard.h"
-#else
+#elif defined(USE_JOYSTICK_MODE)
+#include "arcade_joystick.h"
+#elif defined(USE_JVS_MODE)
 #include "jvs_protocol.h"
 #endif
 /* USER CODE END Includes */
@@ -107,10 +110,13 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   
-#ifdef USE_DIRECT_BUTTONS
-  /* Initialize arcade keyboard system (USB HID mode) */
+#ifdef USE_KEYBOARD_MODE
+  /* Initialize arcade keyboard system (NKRO USB HID mode) */
   Arcade_Init();
-#else
+#elif defined(USE_JOYSTICK_MODE)
+  /* Initialize arcade joystick system (Dual Joystick USB HID mode) */
+  Joystick_Init();
+#elif defined(USE_JVS_MODE)
   /* Initialize JVS protocol system (RS485 mode) */
   JVS_Init();
 #endif
@@ -126,7 +132,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-#ifdef USE_DIRECT_BUTTONS
+#ifdef USE_KEYBOARD_MODE
     /* USB HID Keyboard mode - High-speed button scanning with minimal latency */
     
     /* Scan buttons as fast as possible, but debounce handles timing */
@@ -137,7 +143,21 @@ int main(void)
     
     /* No delay - run as fast as possible for minimal input latency!
      * USB will throttle automatically at 1ms intervals (1000Hz polling) */
-#else
+     
+#elif defined(USE_JOYSTICK_MODE)
+    /* USB HID Joystick mode - Dual joystick emulation */
+    
+    /* Scan all buttons and update joystick states */
+    Joystick_ProcessButtons();
+    
+    /* Send reports for both joysticks */
+    Joystick_SendReport(1);  /* Player 1 */
+    HAL_Delay(1);            /* Small delay between reports */
+    Joystick_SendReport(2);  /* Player 2 */
+    
+    /* No additional delay - USB polling handles timing */
+    
+#elif defined(USE_JVS_MODE)
     /* JVS Protocol mode - RS485 communication */
     JVS_ProcessPackets();
     

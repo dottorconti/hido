@@ -367,6 +367,40 @@ __ALIGN_BEGIN static uint8_t HID_KEYBOARD_ReportDesc[HID_KEYBOARD_REPORT_DESC_SI
   0xC0                           // END_COLLECTION
 };
 
+/* USB HID device Joystick Report Descriptor */
+/* Report format: [JoystickID][X][Y][Buttons_Low][Buttons_High] = 5 bytes */
+__ALIGN_BEGIN static uint8_t HID_JOYSTICK_ReportDesc[54]  __ALIGN_END =
+{
+  0x05, 0x01,                    // USAGE_PAGE (Generic Desktop)
+  0x09, 0x04,                    // USAGE (Joystick)
+  0xA1, 0x01,                    // COLLECTION (Application)
+  
+  // Report ID (1 or 2 for Player 1/2)
+  0x85, 0x01,                    //   REPORT_ID (1)
+  
+  // X and Y Axes
+  0x05, 0x01,                    //   USAGE_PAGE (Generic Desktop)
+  0x09, 0x30,                    //   USAGE (X)
+  0x09, 0x31,                    //   USAGE (Y)
+  0x15, 0x81,                    //   LOGICAL_MINIMUM (-127)
+  0x25, 0x7F,                    //   LOGICAL_MAXIMUM (127)
+  0x75, 0x08,                    //   REPORT_SIZE (8)
+  0x95, 0x02,                    //   REPORT_COUNT (2)
+  0x81, 0x02,                    //   INPUT (Data,Var,Abs)
+  
+  // 16 Buttons
+  0x05, 0x09,                    //   USAGE_PAGE (Button)
+  0x19, 0x01,                    //   USAGE_MINIMUM (Button 1)
+  0x29, 0x10,                    //   USAGE_MAXIMUM (Button 16)
+  0x15, 0x00,                    //   LOGICAL_MINIMUM (0)
+  0x25, 0x01,                    //   LOGICAL_MAXIMUM (1)
+  0x75, 0x01,                    //   REPORT_SIZE (1)
+  0x95, 0x10,                    //   REPORT_COUNT (16)
+  0x81, 0x02,                    //   INPUT (Data,Var,Abs)
+  
+  0xC0                           // END_COLLECTION
+};
+
 /**
   * @}
   */
@@ -485,8 +519,13 @@ static uint8_t  USBD_HID_Setup(USBD_HandleTypeDef *pdev,
         case USB_REQ_GET_DESCRIPTOR:
           if (req->wValue >> 8 == HID_REPORT_DESC)
           {
+#ifdef USE_JOYSTICK_MODE
+            len = MIN(54, req->wLength);
+            pbuf = HID_JOYSTICK_ReportDesc;
+#else
             len = MIN(HID_KEYBOARD_REPORT_DESC_SIZE, req->wLength);
             pbuf = HID_KEYBOARD_ReportDesc;
+#endif
           }
           else if (req->wValue >> 8 == HID_DESCRIPTOR_TYPE)
           {

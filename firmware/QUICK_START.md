@@ -2,18 +2,29 @@
 
 ## Mode Selection
 
-### Direct Button Mode (USB HID Keyboard) - Default
-File: `Middlewares/ST/STM32_USB_Device_Library/Class/HID/Inc/usbd_hid.h`
+**File to edit:** `Middlewares/ST/STM32_USB_Device_Library/Class/HID/Inc/usbd_hid.h`
 
+Uncomment **ONE** of these three modes:
+
+### Mode 1: NKRO Keyboard (Default)
 ```c
-#define USE_DIRECT_BUTTONS    // Keep this line
+#define USE_KEYBOARD_MODE      // USB HID Keyboard with 96-key NKRO
+// #define USE_JOYSTICK_MODE   // Comment out other modes
+// #define USE_JVS_MODE        // Comment out other modes
 ```
 
-### JVS Mode (RS485 Arcade I/O)
-File: `Middlewares/ST/STM32_USB_Device_Library/Class/HID/Inc/usbd_hid.h`
-
+### Mode 2: Dual Joystick
 ```c
-// #define USE_DIRECT_BUTTONS    // Comment out or delete this line
+// #define USE_KEYBOARD_MODE   // Comment out other modes
+#define USE_JOYSTICK_MODE      // 2 USB HID Joysticks (16 buttons each)
+// #define USE_JVS_MODE        // Comment out other modes
+```
+
+### Mode 3: JVS Protocol (RS485)
+```c
+// #define USE_KEYBOARD_MODE   // Comment out other modes
+// #define USE_JOYSTICK_MODE   // Comment out other modes
+#define USE_JVS_MODE           // JVS/RS485 arcade I/O board
 ```
 
 ## Compilation
@@ -45,16 +56,27 @@ make -j4
 
 ## Testing
 
-### Direct Button Mode
-1. Compile with `USE_DIRECT_BUTTONS` defined
+### Mode 1: NKRO Keyboard
+1. Compile with `USE_KEYBOARD_MODE` defined
 2. Flash firmware
 3. Connect USB to PC
-4. Device should appear as "STM32 Human Interface Device"
-5. Test buttons with keyboard tester website
-6. LED1 should blink once at startup
+4. Device appears as "STM32 Human Interface Device"
+5. Test with keyboard tester: https://www.keyboardtester.com
+6. All 27 buttons should work simultaneously (NKRO)
+7. LED1 blinks once at startup
 
-### JVS Mode
-1. Compile **WITHOUT** `USE_DIRECT_BUTTONS`
+### Mode 2: Dual Joystick
+1. Compile with `USE_JOYSTICK_MODE` defined
+2. Flash firmware
+3. Connect USB to PC
+4. Device appears as 2 separate joysticks
+5. Test in Windows: Settings → Devices → Printers & Scanners → Game Controllers
+6. Or use joystick testing tool: https://hardwaretester.com/gamepad
+7. Press buttons to see joystick response
+8. LED1 blinks once at startup
+
+### Mode 3: JVS Protocol
+1. Compile with `USE_JVS_MODE` defined
 2. Flash firmware
 3. Connect RS485 to arcade board
 4. Sense line (PA10) should be floating initially
@@ -63,7 +85,7 @@ make -j4
 
 ## Hardware Connections
 
-### Direct Button Mode
+### Keyboard/Joystick Mode (Buttons)
 - **Player 1**: PB3-12 (Joystick + 6 buttons)
 - **Player 2**: PC0-1, PC5-9, PC13-15 (Joystick + 6 buttons)
 - **System**: PA6-7, PA15, PB2, PB13-15

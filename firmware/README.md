@@ -1,23 +1,30 @@
-# HIDO - Arcade NKRO Keyboard Controller
-Open source arcade keyboard with STM32F102 - Ultra-low latency with N-Key Rollover
+# HIDO - Arcade Multi-Mode Controller
+Open source arcade controller with STM32F102 - Three operating modes for maximum flexibility
 
 ## 🎮 Features
 
-- **NKRO Support**: Up to 96 keys simultaneously (no ghosting!)
+- **Triple Mode Support**: NKRO Keyboard, Dual Joystick, or JVS/RS485
+- **NKRO Keyboard Mode**: Up to 96 keys simultaneously (no ghosting!)
+- **Dual Joystick Mode**: 2 independent USB joysticks (16 buttons + 2 axes each)
+- **JVS Protocol Mode**: RS485 arcade I/O board communication
 - **Ultra-Low Latency**: 1ms USB polling (1000Hz) + optimized scanning
 - **Hardware Debouncing**: 5ms configurable debounce time
-- **Dual Mode**: Direct buttons OR JVS/RS485 (via compile flag)
-- **Plug & Play**: Standard USB HID keyboard, no drivers needed
+- **Plug & Play**: Standard USB HID device, no drivers needed
 
 ## 🔧 Hardware Configuration
 
 ### Operating Modes
 
-**Mode Selection** - Edit `usbd_hid.h`:
-- **Direct Button Mode**: `#define USE_DIRECT_BUTTONS` (default)
-- **JVS Mode**: Comment out or remove `#define USE_DIRECT_BUTTONS`
+**Mode Selection** - Edit `Middlewares/ST/STM32_USB_Device_Library/Class/HID/Inc/usbd_hid.h`:
 
-### Direct Button Mode (USB HID Keyboard)
+Uncomment **ONE** of these modes:
+```c
+#define USE_KEYBOARD_MODE   // NKRO Keyboard (default)
+// #define USE_JOYSTICK_MODE   // Dual Joystick
+// #define USE_JVS_MODE        // JVS/RS485 Protocol
+```
+
+### Mode 1: NKRO Keyboard (USB HID Keyboard)
 
 **Button Connections (Active LOW with internal pull-ups):**
 
@@ -33,7 +40,28 @@ Open source arcade keyboard with STM32F102 - Ultra-low latency with N-Key Rollov
 - PA6-7, PA15: Coin/Start → Esc, F1, F2
 - PB2, PB13-15: Service/Test/Extra → F3, F4, F5, F6
 
-### JVS Mode (RS485 Arcade I/O)
+### Mode 2: Dual Joystick (USB HID Joystick)
+
+Emulates **2 independent USB joysticks** for arcade games that support joystick input.
+
+**Player 1 Joystick:**
+- PB3-6: Directional axes (Up/Down/Left/Right)
+- PB7-12: Buttons 1-6
+- PA6-7: Coin/Start (Buttons 7-8)
+- PB13-14: Service/Test (Buttons 9-10)
+
+**Player 2 Joystick:**
+- PC0-1, PC5-6: Directional axes
+- PC7-9, PC13-15: Buttons 1-6
+- PA15, PB2: Coin/Start (Buttons 7-8)
+
+**Joystick Features:**
+- 2 analog axes (X, Y) - digitally controlled by buttons
+- 16 buttons per joystick
+- Standard USB HID joystick class
+- Compatible with Windows, Linux, macOS
+
+### Mode 3: JVS Protocol (RS485 Arcade I/O)
 
 **RS485 Interface (SN65HVD1786D):**
 - PA8 (TX): RS485 Data Transmit
