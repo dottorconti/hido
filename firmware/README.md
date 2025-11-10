@@ -161,14 +161,37 @@ Edit `Middlewares/ST/STM32_USB_Device_Library/Class/HID/Inc/usbd_hid.h`:
 - ✅ Added structured button mapping system
 - ✅ Prepared infrastructure for JVS support
 
+## � Credits and Acknowledgments
+
+This project uses and references the following open-source projects:
+
+- **[OpenJVS](https://github.com/OpenJVS/OpenJVS)** by Bobby Dilley (GPL-3.0)
+  - JVS protocol specification and reference implementation
+  - Packet structure, command codes, and RS485 communication patterns
+  - Our JVS implementation is inspired by OpenJVS but completely rewritten for STM32
+
+- **STM32Cube HAL Drivers** by STMicroelectronics (BSD-3-Clause)
+  - Hardware abstraction layer for STM32F1 series
+
+- **STM32 USB Device Library** by STMicroelectronics (BSD-3-Clause)
+  - USB HID device implementation
+
+See [CREDITS.md](CREDITS.md) for complete attribution and license information.
+
 ## 📜 License
 
-BSD 3-Clause License (inherited from ST libraries)
+MIT License (for HIDO-specific code)
+
+**Note**: JVS implementation is inspired by OpenJVS (GPL-3.0). If you use the JVS portions in a GPL project, you must comply with GPL-3.0 terms.
 
 ## 👤 Authors
 
-Original: STM32CubeIDE project
-Updated: 2025 - Arcade NKRO implementation
+- **Original Hardware**: dottorconti (2020)
+- **Firmware Rewrite**: 2025 - Complete NKRO + JVS implementation
 
 ---
-**Note**: For JVS/RS485 support, contact for custom implementation.
+
+**Support the open-source arcade community!** ⭐
+- Star this repository if you find it useful
+- Check out [OpenJVS](https://github.com/OpenJVS/OpenJVS) for Linux-based JVS emulation
+- Contribute to arcade hardware preservation

@@ -8,6 +8,10 @@
   * JVS Protocol for arcade cabinets over RS485
   * Compatible with NAOMI, Triforce, Chihiro, Lindbergh, etc.
   *
+  * Based on JVS specification 3.0 and inspired by OpenJVS project:
+  * https://github.com/OpenJVS/OpenJVS (GPL-3.0 License)
+  * See CREDITS.md for full attribution and license information.
+  *
   ******************************************************************************
   */
 

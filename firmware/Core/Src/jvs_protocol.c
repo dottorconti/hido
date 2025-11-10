@@ -8,6 +8,16 @@
   * JVS over RS485 with SN65HVD1786D transceiver
   * USART1: PA9 (TX), PA8 (RX), PA10 (Sense Line)
   *
+  * This implementation is based on the JVS protocol specification and
+  * inspired by the OpenJVS project by Bobby Dilley:
+  * https://github.com/OpenJVS/OpenJVS
+  *
+  * OpenJVS License: GPL-3.0
+  * HIDO Project License: MIT (see CREDITS.md for details)
+  *
+  * The code has been completely rewritten for STM32 embedded systems
+  * with hardware-specific optimizations for arcade button scanning.
+  *
   ******************************************************************************
   */
 

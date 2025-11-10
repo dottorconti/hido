@@ -3,6 +3,8 @@
 ## Overview
 This document describes the JVS (JAMMA Video Standard) implementation for the HIDO Arcade Controller.
 
+**Acknowledgment**: This implementation is based on the JVS specification and inspired by the excellent work of the [OpenJVS project](https://github.com/OpenJVS/OpenJVS) by Bobby Dilley. OpenJVS (GPL-3.0) provided invaluable reference for packet structure, command codes, and protocol patterns. Our implementation has been rewritten specifically for STM32 embedded systems with hardware-optimized arcade button scanning.
+
 ## Hardware Setup
 
 ### RS485 Transceiver: SN65HVD1786D
@@ -224,11 +226,27 @@ while (1) {
 - Check button active state (LOW vs HIGH)
 - Confirm pull-up resistors are enabled
 
-## References
+## References and Credits
 
+### Primary References
+- **[OpenJVS Project](https://github.com/OpenJVS/OpenJVS)** by Bobby Dilley (GPL-3.0 License)
+  - Comprehensive JVS protocol reference implementation for Linux
+  - Packet structure, escape sequences, and command handling patterns
+  - Support for multiple arcade systems (NAOMI, Triforce, Chihiro, etc.)
+  - **Our JVS code is inspired by OpenJVS but completely rewritten for STM32**
+
+### Technical Documentation
 - JVS Specification 3.0: [arcade-docs.com](https://arcade-docs.com)
-- OpenJVS Implementation: [github.com/OpenJVS/OpenJVS](https://github.com/OpenJVS/OpenJVS)
 - SN65HVD1786D Datasheet: [ti.com](https://www.ti.com/product/SN65HVD1786)
+- RS485 Standard: TIA/EIA-485-A
+
+### Community Resources
+- Arcade preservation forums and documentation
+- TeknoParrot JVS test utilities
+
+**Special thanks to Bobby Dilley and the OpenJVS contributors for their excellent documentation and reference code!**
 
 ## License
-Same as main project (see root LICENSE file)
+MIT License for HIDO-specific implementation. 
+
+**Note**: This implementation is inspired by OpenJVS (GPL-3.0). If incorporating this code into a GPL project, you must comply with GPL-3.0 terms. See [CREDITS.md](CREDITS.md) for full details.
