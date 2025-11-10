@@ -26,11 +26,12 @@ extern "C" {
 #define DEBOUNCE_TIME_MS    5    /* Button debounce time in milliseconds */
 #define MAX_JOYSTICK_BUTTONS 16  /* Maximum buttons per joystick */
 
-/* Joystick Report Structure - HID compliant (4 bytes total - TEST without Report ID) */
+/* Joystick Report Structure - 2 axes + 14 buttons with Report ID */
 typedef struct {
+    uint8_t report_id;      /* Report ID: 1=Player1, 2=Player2 */
     uint8_t x;              /* X axis: 0-255 (127=center) */
     uint8_t y;              /* Y axis: 0-255 (127=center) */
-    uint16_t buttons;       /* 16 buttons as bitmap */
+    uint16_t buttons;       /* 14 buttons (bits 0-13) + 2 padding bits (14-15) */
 } __attribute__((packed)) JoystickReport_t;
 
 /* Button mapping structure */
@@ -46,7 +47,7 @@ typedef struct {
 /* Function prototypes */
 void Joystick_Init(void);
 void Joystick_ProcessButtons(void);
-void Joystick_SendReport(uint8_t joystick_id);
+void Joystick_SendReport(void);
 
 #ifdef __cplusplus
 }

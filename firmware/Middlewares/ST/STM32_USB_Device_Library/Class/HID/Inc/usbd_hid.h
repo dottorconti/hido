@@ -51,8 +51,8 @@ extern "C" {
   #define HID_EPIN_SIZE                 0x09U  // 8 bytes + 1 modifier for NKRO keyboard
   #define HID_REPORT_DESC_SIZE          63U    // NKRO keyboard descriptor size
 #elif defined(USE_JOYSTICK_MODE)
-  #define HID_EPIN_SIZE                 0x03U  // 3 bytes: 2 axes (8-bit) + 1 byte buttons (8 buttons)
-  #define HID_REPORT_DESC_SIZE          43U    // Joystick with Physical collection (43 bytes exact)
+  #define HID_EPIN_SIZE                 0x05U  // 5 bytes: 1 Report ID + 2 axes (8-bit) + 2 bytes buttons (14 buttons + 2 padding)
+  #define HID_REPORT_DESC_SIZE          55U    // Dual joystick with Report ID (2 joysticks, 14 buttons each)
 #elif defined(USE_JVS_MODE)
   #define HID_EPIN_SIZE                 0x40U  // 64 bytes for JVS
   #define HID_REPORT_DESC_SIZE          0U     // JVS uses custom protocol
