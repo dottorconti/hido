@@ -145,13 +145,14 @@ int main(void)
      * USB will throttle automatically at 1ms intervals (1000Hz polling) */
      
 #elif defined(USE_JOYSTICK_MODE)
-    /* USB HID Joystick mode - Single joystick (Player 1) */
+    /* USB HID Joystick mode - Dual joysticks (Player 1 & 2) */
     
     /* Scan all buttons and update joystick states */
     Joystick_ProcessButtons();
     
-    /* Send joystick report for Player 1 */
-    Joystick_SendReport(1);
+    /* Send joystick reports for both players */
+    Joystick_SendReport(1);  /* Player 1 (Report ID 1) */
+    Joystick_SendReport(2);  /* Player 2 (Report ID 2) */
     
     /* No delay - USB polling handles timing (1000Hz) */
     

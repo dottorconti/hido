@@ -74,12 +74,14 @@ static const JoystickButtonMapping_t button_map[] = {
   */
 void Joystick_Init(void)
 {
-    /* Initialize joystick 1 */
+    /* Initialize joystick 1 (Report ID = 1) */
+    joystick1_report.report_id = 1;
     joystick1_report.x = 0;
     joystick1_report.y = 0;
     joystick1_report.buttons = 0;
     
-    /* Initialize joystick 2 */
+    /* Initialize joystick 2 (Report ID = 2) */
+    joystick2_report.report_id = 2;
     joystick2_report.x = 0;
     joystick2_report.y = 0;
     joystick2_report.buttons = 0;

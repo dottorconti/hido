@@ -367,13 +367,50 @@ __ALIGN_BEGIN static uint8_t HID_KEYBOARD_ReportDesc[HID_KEYBOARD_REPORT_DESC_SI
   0xC0                           // END_COLLECTION
 };
 
-/* USB HID device Joystick Report Descriptor */
-/* Report format: [X][Y][Buttons_Low][Buttons_High] = 4 bytes */
-__ALIGN_BEGIN static uint8_t HID_JOYSTICK_ReportDesc[50]  __ALIGN_END =
+/* USB HID device Dual Joystick Report Descriptor */
+/* Two separate joysticks using Report ID */
+/* Report 1 (Player 1): [ID=1][X][Y][Buttons_Low][Buttons_High] = 5 bytes */
+/* Report 2 (Player 2): [ID=2][X][Y][Buttons_Low][Buttons_High] = 5 bytes */
+__ALIGN_BEGIN static uint8_t HID_JOYSTICK_ReportDesc[78]  __ALIGN_END =
 {
   0x05, 0x01,                    // USAGE_PAGE (Generic Desktop)
-  0x09, 0x04,                    // USAGE (Joystick)
+  0x09, 0x04,                    // USAGE (Joystick) - Player 1
   0xA1, 0x01,                    // COLLECTION (Application)
+  
+  0x85, 0x01,                    //   REPORT_ID (1) - Player 1
+  
+  0x09, 0x01,                    //   USAGE (Pointer)
+  0xA1, 0x00,                    //   COLLECTION (Physical)
+  
+  // X and Y Axes
+  0x09, 0x30,                    //     USAGE (X)
+  0x09, 0x31,                    //     USAGE (Y)
+  0x15, 0x81,                    //     LOGICAL_MINIMUM (-127)
+  0x25, 0x7F,                    //     LOGICAL_MAXIMUM (127)
+  0x75, 0x08,                    //     REPORT_SIZE (8)
+  0x95, 0x02,                    //     REPORT_COUNT (2)
+  0x81, 0x02,                    //     INPUT (Data,Var,Abs)
+  
+  0xC0,                          //   END_COLLECTION (Physical)
+  
+  // 16 Buttons
+  0x05, 0x09,                    //   USAGE_PAGE (Button)
+  0x19, 0x01,                    //   USAGE_MINIMUM (Button 1)
+  0x29, 0x10,                    //   USAGE_MAXIMUM (Button 16)
+  0x15, 0x00,                    //   LOGICAL_MINIMUM (0)
+  0x25, 0x01,                    //   LOGICAL_MAXIMUM (1)
+  0x75, 0x01,                    //   REPORT_SIZE (1)
+  0x95, 0x10,                    //   REPORT_COUNT (16)
+  0x81, 0x02,                    //   INPUT (Data,Var,Abs)
+  
+  0xC0,                          // END_COLLECTION (Application)
+  
+  // Second Joystick (Player 2)
+  0x05, 0x01,                    // USAGE_PAGE (Generic Desktop)
+  0x09, 0x04,                    // USAGE (Joystick) - Player 2
+  0xA1, 0x01,                    // COLLECTION (Application)
+  
+  0x85, 0x02,                    //   REPORT_ID (2) - Player 2
   
   0x09, 0x01,                    //   USAGE (Pointer)
   0xA1, 0x00,                    //   COLLECTION (Physical)

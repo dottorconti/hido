@@ -50,7 +50,7 @@ extern "C" {
 #define HID_EPIN_ADDR                 0x81U
 
 #ifdef USE_JOYSTICK_MODE
-#define HID_EPIN_SIZE                 0x04U  /* Joystick report: 4 bytes */
+#define HID_EPIN_SIZE                 0x05U  /* Joystick report: 5 bytes (Report ID + data) */
 #else
 #define HID_EPIN_SIZE                 0x10U  /* NKRO keyboard: 16 bytes */
 #endif
@@ -59,7 +59,7 @@ extern "C" {
 #define USB_HID_DESC_SIZ              9U
 
 #ifdef USE_JOYSTICK_MODE
-#define HID_REPORT_DESC_SIZE          50U    /* Joystick descriptor */
+#define HID_REPORT_DESC_SIZE          78U    /* Dual Joystick descriptor */
 #else
 #define HID_REPORT_DESC_SIZE          63U    /* NKRO Keyboard descriptor */
 #endif
