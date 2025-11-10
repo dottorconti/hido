@@ -145,17 +145,15 @@ int main(void)
      * USB will throttle automatically at 1ms intervals (1000Hz polling) */
      
 #elif defined(USE_JOYSTICK_MODE)
-    /* USB HID Joystick mode - Dual joystick emulation */
+    /* USB HID Joystick mode - Single joystick (Player 1) */
     
     /* Scan all buttons and update joystick states */
     Joystick_ProcessButtons();
     
-    /* Send reports for both joysticks */
-    Joystick_SendReport(1);  /* Player 1 */
-    HAL_Delay(1);            /* Small delay between reports */
-    Joystick_SendReport(2);  /* Player 2 */
+    /* Send joystick report for Player 1 */
+    Joystick_SendReport(1);
     
-    /* No additional delay - USB polling handles timing */
+    /* No delay - USB polling handles timing (1000Hz) */
     
 #elif defined(USE_JVS_MODE)
     /* JVS Protocol mode - RS485 communication */

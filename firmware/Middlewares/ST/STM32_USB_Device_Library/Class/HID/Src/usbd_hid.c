@@ -149,7 +149,7 @@ __ALIGN_BEGIN static uint8_t USBD_HID_CfgFSDesc[USB_HID_CONFIG_DESC_SIZ]  __ALIG
   0xE0,         /*bmAttributes: bus powered and Support Remote Wake-up */
   0x32,         /*MaxPower 100 mA: this current is used for detecting Vbus*/
 
-  /************** Descriptor of Joystick Mouse interface ****************/
+  /************** Descriptor of HID Joystick interface ****************/
   /* 09 */
   0x09,         /*bLength: Interface Descriptor size*/
   USB_DESC_TYPE_INTERFACE,/*bDescriptorType: Interface descriptor type*/
@@ -157,8 +157,8 @@ __ALIGN_BEGIN static uint8_t USBD_HID_CfgFSDesc[USB_HID_CONFIG_DESC_SIZ]  __ALIG
   0x00,         /*bAlternateSetting: Alternate setting*/
   0x01,         /*bNumEndpoints*/
   0x03,         /*bInterfaceClass: HID*/
-  0x01,         /*bInterfaceSubClass : 1=BOOT, 0=no boot*/
-  0x02,         /*nInterfaceProtocol : 0=none, 1=keyboard, 2=mouse*/
+  0x00,         /*bInterfaceSubClass : 0=no boot*/
+  0x00,         /*nInterfaceProtocol : 0=none (joystick is not boot device)*/
   0,            /*iInterface: Index of string descriptor*/
   /******************** Descriptor of Joystick Mouse HID ********************/
   /* 18 */
@@ -199,7 +199,7 @@ __ALIGN_BEGIN static uint8_t USBD_HID_CfgHSDesc[USB_HID_CONFIG_DESC_SIZ]  __ALIG
   0xE0,         /*bmAttributes: bus powered and Support Remote Wake-up */
   0x32,         /*MaxPower 100 mA: this current is used for detecting Vbus*/
 
-  /************** Descriptor of Joystick Mouse interface ****************/
+  /************** Descriptor of HID Joystick interface ****************/
   /* 09 */
   0x09,         /*bLength: Interface Descriptor size*/
   USB_DESC_TYPE_INTERFACE,/*bDescriptorType: Interface descriptor type*/
@@ -207,8 +207,8 @@ __ALIGN_BEGIN static uint8_t USBD_HID_CfgHSDesc[USB_HID_CONFIG_DESC_SIZ]  __ALIG
   0x00,         /*bAlternateSetting: Alternate setting*/
   0x01,         /*bNumEndpoints*/
   0x03,         /*bInterfaceClass: HID*/
-  0x01,         /*bInterfaceSubClass : 1=BOOT, 0=no boot*/
-  0x02,         /*nInterfaceProtocol : 0=none, 1=keyboard, 2=mouse*/
+  0x00,         /*bInterfaceSubClass : 0=no boot*/
+  0x00,         /*nInterfaceProtocol : 0=none (joystick is not boot device)*/
   0,            /*iInterface: Index of string descriptor*/
   /******************** Descriptor of Joystick Mouse HID ********************/
   /* 18 */
@@ -368,25 +368,26 @@ __ALIGN_BEGIN static uint8_t HID_KEYBOARD_ReportDesc[HID_KEYBOARD_REPORT_DESC_SI
 };
 
 /* USB HID device Joystick Report Descriptor */
-/* Report format: [JoystickID][X][Y][Buttons_Low][Buttons_High] = 5 bytes */
-__ALIGN_BEGIN static uint8_t HID_JOYSTICK_ReportDesc[54]  __ALIGN_END =
+/* Report format: [X][Y][Buttons_Low][Buttons_High] = 4 bytes */
+__ALIGN_BEGIN static uint8_t HID_JOYSTICK_ReportDesc[50]  __ALIGN_END =
 {
   0x05, 0x01,                    // USAGE_PAGE (Generic Desktop)
   0x09, 0x04,                    // USAGE (Joystick)
   0xA1, 0x01,                    // COLLECTION (Application)
   
-  // Report ID (1 or 2 for Player 1/2)
-  0x85, 0x01,                    //   REPORT_ID (1)
+  0x09, 0x01,                    //   USAGE (Pointer)
+  0xA1, 0x00,                    //   COLLECTION (Physical)
   
   // X and Y Axes
-  0x05, 0x01,                    //   USAGE_PAGE (Generic Desktop)
-  0x09, 0x30,                    //   USAGE (X)
-  0x09, 0x31,                    //   USAGE (Y)
-  0x15, 0x81,                    //   LOGICAL_MINIMUM (-127)
-  0x25, 0x7F,                    //   LOGICAL_MAXIMUM (127)
-  0x75, 0x08,                    //   REPORT_SIZE (8)
-  0x95, 0x02,                    //   REPORT_COUNT (2)
-  0x81, 0x02,                    //   INPUT (Data,Var,Abs)
+  0x09, 0x30,                    //     USAGE (X)
+  0x09, 0x31,                    //     USAGE (Y)
+  0x15, 0x81,                    //     LOGICAL_MINIMUM (-127)
+  0x25, 0x7F,                    //     LOGICAL_MAXIMUM (127)
+  0x75, 0x08,                    //     REPORT_SIZE (8)
+  0x95, 0x02,                    //     REPORT_COUNT (2)
+  0x81, 0x02,                    //     INPUT (Data,Var,Abs)
+  
+  0xC0,                          //   END_COLLECTION (Physical)
   
   // 16 Buttons
   0x05, 0x09,                    //   USAGE_PAGE (Button)
@@ -398,7 +399,7 @@ __ALIGN_BEGIN static uint8_t HID_JOYSTICK_ReportDesc[54]  __ALIGN_END =
   0x95, 0x10,                    //   REPORT_COUNT (16)
   0x81, 0x02,                    //   INPUT (Data,Var,Abs)
   
-  0xC0                           // END_COLLECTION
+  0xC0                           // END_COLLECTION (Application)
 };
 
 /**
@@ -520,7 +521,7 @@ static uint8_t  USBD_HID_Setup(USBD_HandleTypeDef *pdev,
           if (req->wValue >> 8 == HID_REPORT_DESC)
           {
 #ifdef USE_JOYSTICK_MODE
-            len = MIN(54, req->wLength);
+            len = MIN(50, req->wLength);
             pbuf = HID_JOYSTICK_ReportDesc;
 #else
             len = MIN(HID_KEYBOARD_REPORT_DESC_SIZE, req->wLength);
