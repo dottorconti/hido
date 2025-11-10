@@ -25,7 +25,7 @@
 #include "usbd_conf.h"
 
 /* USER CODE BEGIN INCLUDE */
-
+#include "usbd_hid.h"  /* For mode selection defines */
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -67,9 +67,21 @@
 #define USBD_LANGID_STRING     1040
 #define USBD_MANUFACTURER_STRING     "STMicroelectronics"
 #define USBD_PID_FS     22315
-#define USBD_PRODUCT_STRING_FS     "STM32 Human interface"
-#define USBD_CONFIGURATION_STRING_FS     "HID Config"
-#define USBD_INTERFACE_STRING_FS     "HID Interface"
+
+/* Product string changes based on mode */
+#ifdef USE_JOYSTICK_MODE
+#define USBD_PRODUCT_STRING_FS     "HIDO Arcade Joystick"
+#define USBD_CONFIGURATION_STRING_FS     "Joystick Config"
+#define USBD_INTERFACE_STRING_FS     "Joystick Interface"
+#elif defined(USE_JVS_MODE)
+#define USBD_PRODUCT_STRING_FS     "HIDO JVS Controller"
+#define USBD_CONFIGURATION_STRING_FS     "JVS Config"
+#define USBD_INTERFACE_STRING_FS     "JVS Interface"
+#else
+#define USBD_PRODUCT_STRING_FS     "HIDO Arcade Keyboard"
+#define USBD_CONFIGURATION_STRING_FS     "Keyboard Config"
+#define USBD_INTERFACE_STRING_FS     "Keyboard Interface"
+#endif
 
 /* USER CODE BEGIN PRIVATE_DEFINES */
 
