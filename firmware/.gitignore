@@ -1,0 +1,44 @@
+# STM32 Project gitignore
+
+# Build directories
+Debug/
+Release/
+build/
+*.o
+*.d
+*.lst
+*.map
+*.hex
+*.bin
+*.elf
+
+# IDE files
+.settings/
+.cproject
+.project
+.mxproject
+
+# Launch configurations
+*.launch
+
+# Backup files
+*~
+*.bak
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+!.vscode/c_cpp_properties.json
+
+# Compiled files
+*.su
+*.cyclo
+
+# Old/backup versions
+[ATT]*.c
+[ATT]*.h
