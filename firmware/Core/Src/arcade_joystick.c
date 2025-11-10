@@ -74,16 +74,14 @@ static const JoystickButtonMapping_t button_map[] = {
   */
 void Joystick_Init(void)
 {
-    /* Initialize joystick 1 (Report ID = 1) */
-    joystick1_report.report_id = 1;
-    joystick1_report.x = 0;
-    joystick1_report.y = 0;
+    /* Initialize joystick 1 (TEST: single joystick, no Report ID) */
+    joystick1_report.x = 127;  /* Center position */
+    joystick1_report.y = 127;  /* Center position */
     joystick1_report.buttons = 0;
     
-    /* Initialize joystick 2 (Report ID = 2) */
-    joystick2_report.report_id = 2;
-    joystick2_report.x = 0;
-    joystick2_report.y = 0;
+    /* Initialize joystick 2 */
+    joystick2_report.x = 127;  /* Center position */
+    joystick2_report.y = 127;  /* Center position */
     joystick2_report.buttons = 0;
     
     /* Clear debounce state */
@@ -100,11 +98,11 @@ void Joystick_ProcessButtons(void)
 {
     uint32_t current_time = HAL_GetTick();
     
-    /* Reset axis positions */
-    joystick1_report.x = 0;
-    joystick1_report.y = 0;
-    joystick2_report.x = 0;
-    joystick2_report.y = 0;
+    /* Reset axis positions to center (127) */
+    joystick1_report.x = 127;
+    joystick1_report.y = 127;
+    joystick2_report.x = 127;
+    joystick2_report.y = 127;
     
     /* Scan all mapped buttons */
     for (uint8_t i = 0; i < BUTTON_MAP_SIZE; i++) {
@@ -127,12 +125,12 @@ void Joystick_ProcessButtons(void)
         
         if (button_state[i]) {
             if (mapping->button_num == 255) {
-                /* Axis direction */
+                /* Axis direction: 0=min, 127=center, 255=max */
                 switch (mapping->axis_dir) {
-                    case 1: report->y = -127; break;  /* Up */
-                    case 2: report->y = +127; break;  /* Down */
-                    case 3: report->x = -127; break;  /* Left */
-                    case 4: report->x = +127; break;  /* Right */
+                    case 1: report->y = 0; break;    /* Up */
+                    case 2: report->y = 255; break;  /* Down */
+                    case 3: report->x = 0; break;    /* Left */
+                    case 4: report->x = 255; break;  /* Right */
                 }
             } else {
                 /* Button press */
