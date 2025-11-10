@@ -41,42 +41,40 @@ extern "C" {
 /** @defgroup USBD_HID_Exported_Defines
   * @{
   */
-/* ===== MODE SELECTION ===== */
-/* Uncomment ONE of these modes: */
-//#define USE_KEYBOARD_MODE      /* NKRO Keyboard with 96 keys */
-#define USE_JOYSTICK_MODE   /* Dual Joystick (2 players) */
-// #define USE_JVS_MODE        /* JVS/RS485 Protocol */
+
+/* Mode selection - uncomment only ONE */
+//#define USE_KEYBOARD_MODE    // NKRO Keyboard mode
+#define USE_JOYSTICK_MODE  // Arcade Joystick mode
+//#define USE_JVS_MODE       // JVS protocol mode
+
+#ifdef USE_KEYBOARD_MODE
+  #define HID_EPIN_SIZE                 0x09U  // 8 bytes + 1 modifier for NKRO keyboard
+  #define HID_REPORT_DESC_SIZE          63U    // NKRO keyboard descriptor size
+#elif defined(USE_JOYSTICK_MODE)
+  #define HID_EPIN_SIZE                 0x03U  // 3 bytes: 2 axes (8-bit) + 1 byte buttons (8 buttons)
+  #define HID_REPORT_DESC_SIZE          43U    // Joystick with Physical collection (43 bytes exact)
+#elif defined(USE_JVS_MODE)
+  #define HID_EPIN_SIZE                 0x40U  // 64 bytes for JVS
+  #define HID_REPORT_DESC_SIZE          0U     // JVS uses custom protocol
+#else
+  #error "Please define one mode: USE_KEYBOARD_MODE, USE_JOYSTICK_MODE, or USE_JVS_MODE"
+#endif
 
 #define HID_EPIN_ADDR                 0x81U
 
-#ifdef USE_JOYSTICK_MODE
-#define HID_EPIN_SIZE                 0x03U  /* Joystick report: 3 bytes */
-#else
-#define HID_EPIN_SIZE                 0x10U  /* NKRO keyboard: 16 bytes */
-#endif
-
 #define USB_HID_CONFIG_DESC_SIZ       34U
 #define USB_HID_DESC_SIZ              9U
-
-#ifdef USE_JOYSTICK_MODE
-#define HID_REPORT_DESC_SIZE          42U    /* Minimal Joystick descriptor */
-#else
-#define HID_REPORT_DESC_SIZE          63U    /* NKRO Keyboard descriptor */
-#endif
-
-/* Legacy define for compatibility */
-#define HID_KEYBOARD_REPORT_DESC_SIZE HID_REPORT_DESC_SIZE
+#define HID_MOUSE_REPORT_DESC_SIZE    74U
 
 #define HID_DESCRIPTOR_TYPE           0x21U
 #define HID_REPORT_DESC               0x22U
 
-/* Reduced interval for minimal latency - 1ms polling (1000Hz) */
 #ifndef HID_HS_BINTERVAL
-#define HID_HS_BINTERVAL            0x01U  /* 1ms for high-speed */
+#define HID_HS_BINTERVAL            0x07U
 #endif /* HID_HS_BINTERVAL */
 
 #ifndef HID_FS_BINTERVAL
-#define HID_FS_BINTERVAL            0x01U  /* 1ms for full-speed (125us * 8 = 1ms) */
+#define HID_FS_BINTERVAL            0x0AU
 #endif /* HID_FS_BINTERVAL */
 
 #define HID_REQ_SET_PROTOCOL          0x0BU
