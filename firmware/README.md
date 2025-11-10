@@ -1,6 +1,27 @@
 # HIDO - Arcade Multi-Mode Controller
 Open source arcade controller with STM32F102 - Three operating modes for maximum flexibility
 
+## ⚠️ IMPORTANT: Custom Code vs Middleware
+
+### Problem with previous commits (b76fa87, c5c3dc6)
+These commits modified **middleware files directly**:
+- `Middlewares/ST/STM32_USB_Device_Library/Class/HID/Inc/usbd_hid.h`
+- `Middlewares/ST/STM32_USB_Device_Library/Class/HID/Src/usbd_hid.c`
+
+**Issue**: STM32CubeMX regeneration **overwrites** these changes!
+
+### ✅ Correct Approach (WIP)
+Custom HID descriptors should be in:
+- `Core/Inc/usbd_hid_custom.h` - Custom definitions
+- `Core/Src/usbd_hid_custom.c` - Custom HID descriptor
+
+**Benefits**:
+- ✅ Survives STM32CubeMX regeneration
+- ✅ Clean separation: generated vs custom code
+- ✅ Git tracks only custom files
+
+**Status**: Migration in progress. Current code still uses direct middleware modification.
+
 ## 🎮 Features
 
 - **Triple Mode Support**: NKRO Keyboard, Dual Joystick, or JVS/RS485
