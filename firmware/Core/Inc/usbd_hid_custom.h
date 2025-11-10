@@ -23,11 +23,11 @@ extern "C" {
 
 /* HID Configuration for Joystick Mode */
 #ifdef USE_JOYSTICK_MODE
-  /* Report size: 1 Report ID + 2 axes + 2 bytes buttons (14 buttons + 2 padding) */
-  #define HID_EPIN_SIZE_CUSTOM          0x05U
+  /* Report size: 1 Report ID + 2 axes + 2 bytes buttons = 5 bytes per report */
+  #define HID_EPIN_SIZE_CUSTOM          0x06U
   
-  /* Descriptor size: Dual joystick with Report ID (2 joysticks, 14 buttons each) */
-  #define HID_REPORT_DESC_SIZE_CUSTOM   55U
+  /* Descriptor size: Dual joystick with TWO Application Collections (2 devices) */
+  #define HID_REPORT_DESC_SIZE_CUSTOM   102U
 
   /* Custom HID Report Descriptor - Dual Joystick with 14 buttons each */
   extern const uint8_t HID_JOYSTICK_ReportDesc_Custom[HID_REPORT_DESC_SIZE_CUSTOM];

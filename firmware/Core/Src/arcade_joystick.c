@@ -20,7 +20,7 @@
 /* External USB device handle */
 extern USBD_HandleTypeDef hUsbDeviceFS;
 
-/* Joystick state - dual joystick reports */
+/* Joystick state - 2 separate reports (Player 1 and Player 2) */
 static JoystickReport_t joystick_report[2] = {
     {.report_id = 1, .x = 127, .y = 127, .buttons = 0},  /* Player 1 */
     {.report_id = 2, .x = 127, .y = 127, .buttons = 0}   /* Player 2 */
@@ -79,12 +79,12 @@ static const JoystickButtonMapping_t button_map[] = {
   */
 void Joystick_Init(void)
 {
-    /* Initialize both joystick reports - centered at 127 */
+    /* Initialize both joystick reports */
     for (uint8_t player = 0; player < 2; player++) {
-        joystick_report[player].report_id = player + 1;  /* Report ID: 1 or 2 */
-        joystick_report[player].x = 127;                 /* X center */
-        joystick_report[player].y = 127;                 /* Y center */
-        joystick_report[player].buttons = 0;             /* All buttons released */
+        joystick_report[player].report_id = player + 1;
+        joystick_report[player].x = 127;
+        joystick_report[player].y = 127;
+        joystick_report[player].buttons = 0;
     }
     
     /* Clear debounce state */
@@ -131,7 +131,7 @@ void Joystick_ProcessButtons(void)
         /* Update joystick state if button is pressed */
         if (button_state[i]) {
             if (mapping->button_num == 255) {
-                /* Axis direction: 0=min, 127=center, 255=max */
+                /* Axis direction */
                 switch (mapping->axis_dir) {
                     case 1: joystick_report[player_idx].y = 0; break;    /* Up */
                     case 2: joystick_report[player_idx].y = 255; break;  /* Down */
@@ -149,11 +149,11 @@ void Joystick_ProcessButtons(void)
 }
 
 /**
-  * @brief  Send joystick reports via USB (both players)
+  * @brief  Send joystick reports via USB (both players as separate devices)
   */
 void Joystick_SendReport(void)
 {
-    /* Send both HID reports (Player 1 and Player 2) */
+    /* Send both HID reports (Windows sees 2 separate joystick devices) */
     if (hUsbDeviceFS.dev_state == USBD_STATE_CONFIGURED) {
         /* Send Player 1 report (Report ID 1) */
         USBD_HID_SendReport(&hUsbDeviceFS, (uint8_t*)&joystick_report[0], sizeof(JoystickReport_t));

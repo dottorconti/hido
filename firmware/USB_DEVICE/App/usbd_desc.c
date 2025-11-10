@@ -65,23 +65,11 @@
 
 #define USBD_VID     1155
 #define USBD_LANGID_STRING     1040
-#define USBD_MANUFACTURER_STRING     "STMicroelectronics"
+#define USBD_MANUFACTURER_STRING     "HIDO Project"
 #define USBD_PID_FS     22315
-
-/* Product string changes based on mode */
-#ifdef USE_JOYSTICK_MODE
 #define USBD_PRODUCT_STRING_FS     "HIDO Arcade Joystick"
-#define USBD_CONFIGURATION_STRING_FS     "Joystick Config"
-#define USBD_INTERFACE_STRING_FS     "Joystick Interface"
-#elif defined(USE_JVS_MODE)
-#define USBD_PRODUCT_STRING_FS     "HIDO JVS Controller"
-#define USBD_CONFIGURATION_STRING_FS     "JVS Config"
-#define USBD_INTERFACE_STRING_FS     "JVS Interface"
-#else
-#define USBD_PRODUCT_STRING_FS     "HIDO Arcade Keyboard"
-#define USBD_CONFIGURATION_STRING_FS     "Keyboard Config"
-#define USBD_INTERFACE_STRING_FS     "Keyboard Interface"
-#endif
+#define USBD_CONFIGURATION_STRING_FS     "HID Config"
+#define USBD_INTERFACE_STRING_FS     "HID Interface"
 
 /* USER CODE BEGIN PRIVATE_DEFINES */
 
@@ -107,19 +95,18 @@
 /**
   * @}
   */
-  
+
 /** @defgroup USBD_DESC_Private_FunctionPrototypes USBD_DESC_Private_FunctionPrototypes
   * @brief Private functions declaration.
   * @{
   */
-  
+
 static void Get_SerialNum(void);
 static void IntToUnicode(uint32_t value, uint8_t * pbuf, uint8_t len);
-  
+
 /**
   * @}
-  */  
-  
+  */
 
 /** @defgroup USBD_DESC_Private_FunctionPrototypes USBD_DESC_Private_FunctionPrototypes
   * @brief Private functions declaration for FS.
@@ -172,8 +159,8 @@ __ALIGN_BEGIN uint8_t USBD_FS_DeviceDesc[USB_LEN_DEV_DESC] __ALIGN_END =
   HIBYTE(USBD_VID),           /*idVendor*/
   LOBYTE(USBD_PID_FS),        /*idProduct*/
   HIBYTE(USBD_PID_FS),        /*idProduct*/
-  0x00,                       /*bcdDevice rel. 3.00*/
-  0x03,
+  0x00,                       /*bcdDevice rel. 2.00*/
+  0x02,
   USBD_IDX_MFC_STR,           /*Index of manufacturer  string*/
   USBD_IDX_PRODUCT_STR,       /*Index of product string*/
   USBD_IDX_SERIAL_STR,        /*Index of serial number string*/
@@ -195,7 +182,7 @@ __ALIGN_BEGIN uint8_t USBD_FS_DeviceDesc[USB_LEN_DEV_DESC] __ALIGN_END =
   #pragma data_alignment=4
 #endif /* defined ( __ICCARM__ ) */
 
-/** USB lang indentifier descriptor. */
+/** USB lang identifier descriptor. */
 __ALIGN_BEGIN uint8_t USBD_LangIDDesc[USB_LEN_LANGID_STR_DESC] __ALIGN_END =
 {
      USB_LEN_LANGID_STR_DESC,
@@ -211,7 +198,7 @@ __ALIGN_BEGIN uint8_t USBD_LangIDDesc[USB_LEN_LANGID_STR_DESC] __ALIGN_END =
 __ALIGN_BEGIN uint8_t USBD_StrDesc[USBD_MAX_STR_DESC_SIZ] __ALIGN_END;
 
 #if defined ( __ICCARM__ ) /*!< IAR Compiler */
-  #pragma data_alignment=4   
+  #pragma data_alignment=4
 #endif
 __ALIGN_BEGIN uint8_t USBD_StringSerial[USB_SIZ_STRING_SERIAL] __ALIGN_END = {
   USB_SIZ_STRING_SERIAL,
@@ -344,13 +331,15 @@ uint8_t * USBD_FS_InterfaceStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *leng
 }
 
 /**
-  * @brief  Create the serial number string descriptor 
-  * @param  None 
+  * @brief  Create the serial number string descriptor
+  * @param  None
   * @retval None
   */
 static void Get_SerialNum(void)
 {
-  uint32_t deviceserial0, deviceserial1, deviceserial2;
+  uint32_t deviceserial0;
+  uint32_t deviceserial1;
+  uint32_t deviceserial2;
 
   deviceserial0 = *(uint32_t *) DEVICE_ID1;
   deviceserial1 = *(uint32_t *) DEVICE_ID2;
@@ -366,9 +355,9 @@ static void Get_SerialNum(void)
 }
 
 /**
-  * @brief  Convert Hex 32Bits value into char 
+  * @brief  Convert Hex 32Bits value into char
   * @param  value: value to convert
-  * @param  pbuf: pointer to the buffer 
+  * @param  pbuf: pointer to the buffer
   * @param  len: buffer length
   * @retval None
   */
@@ -404,4 +393,3 @@ static void IntToUnicode(uint32_t value, uint8_t * pbuf, uint8_t len)
   * @}
   */
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

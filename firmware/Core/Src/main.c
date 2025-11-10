@@ -17,7 +17,6 @@
   ******************************************************************************
   */
 /* USER CODE END Header */
-
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "adc.h"
@@ -145,14 +144,13 @@ int main(void)
      * USB will throttle automatically at 1ms intervals (1000Hz polling) */
      
 #elif defined(USE_JOYSTICK_MODE)
-    /* USB HID Joystick mode - Dual joysticks (Player 1 & 2) */
+    /* USB HID Joystick mode - Single joystick with 4 axes + 32 buttons */
     
-    /* Scan all buttons and update joystick states */
+    /* Scan all buttons and update joystick state */
     Joystick_ProcessButtons();
     
-    /* Send joystick reports for both players */
-    Joystick_SendReport(1);  /* Player 1 (Report ID 1) */
-    Joystick_SendReport(2);  /* Player 2 (Report ID 2) */
+    /* Send combined joystick report (P1+P2) */
+    Joystick_SendReport();
     
     /* No delay - USB polling handles timing (1000Hz) */
     
@@ -180,7 +178,8 @@ void SystemClock_Config(void)
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
   RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
-  /** Initializes the CPU, AHB and APB busses clocks 
+  /** Initializes the RCC Oscillators according to the specified parameters
+  * in the RCC_OscInitTypeDef structure.
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
@@ -193,7 +192,8 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  /** Initializes the CPU, AHB and APB busses clocks 
+
+  /** Initializes the CPU, AHB and APB buses clocks
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
@@ -240,12 +240,10 @@ void Error_Handler(void)
   * @retval None
   */
 void assert_failed(uint8_t *file, uint32_t line)
-{ 
+{
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
