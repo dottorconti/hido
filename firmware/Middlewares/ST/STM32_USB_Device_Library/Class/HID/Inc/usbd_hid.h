@@ -59,7 +59,7 @@ extern "C" {
 #define USB_HID_DESC_SIZ              9U
 
 #ifdef USE_JOYSTICK_MODE
-#define HID_REPORT_DESC_SIZE          78U    /* Dual Joystick descriptor */
+#define HID_REPORT_DESC_SIZE          86U    /* Dual Joystick descriptor */
 #else
 #define HID_REPORT_DESC_SIZE          63U    /* NKRO Keyboard descriptor */
 #endif

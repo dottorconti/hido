@@ -371,7 +371,7 @@ __ALIGN_BEGIN static uint8_t HID_KEYBOARD_ReportDesc[HID_KEYBOARD_REPORT_DESC_SI
 /* Two separate joysticks using Report ID */
 /* Report 1 (Player 1): [ID=1][X][Y][Buttons_Low][Buttons_High] = 5 bytes */
 /* Report 2 (Player 2): [ID=2][X][Y][Buttons_Low][Buttons_High] = 5 bytes */
-__ALIGN_BEGIN static uint8_t HID_JOYSTICK_ReportDesc[78]  __ALIGN_END =
+__ALIGN_BEGIN static uint8_t HID_JOYSTICK_ReportDesc[86]  __ALIGN_END =
 {
   0x05, 0x01,                    // USAGE_PAGE (Generic Desktop)
   0x09, 0x04,                    // USAGE (Joystick) - Player 1
@@ -385,8 +385,8 @@ __ALIGN_BEGIN static uint8_t HID_JOYSTICK_ReportDesc[78]  __ALIGN_END =
   // X and Y Axes
   0x09, 0x30,                    //     USAGE (X)
   0x09, 0x31,                    //     USAGE (Y)
-  0x15, 0x81,                    //     LOGICAL_MINIMUM (-127)
-  0x25, 0x7F,                    //     LOGICAL_MAXIMUM (127)
+  0x16, 0x00, 0x80,              //     LOGICAL_MINIMUM (-32768)
+  0x26, 0xFF, 0x7F,              //     LOGICAL_MAXIMUM (32767)
   0x75, 0x08,                    //     REPORT_SIZE (8)
   0x95, 0x02,                    //     REPORT_COUNT (2)
   0x81, 0x02,                    //     INPUT (Data,Var,Abs)
@@ -418,8 +418,8 @@ __ALIGN_BEGIN static uint8_t HID_JOYSTICK_ReportDesc[78]  __ALIGN_END =
   // X and Y Axes
   0x09, 0x30,                    //     USAGE (X)
   0x09, 0x31,                    //     USAGE (Y)
-  0x15, 0x81,                    //     LOGICAL_MINIMUM (-127)
-  0x25, 0x7F,                    //     LOGICAL_MAXIMUM (127)
+  0x16, 0x00, 0x80,              //     LOGICAL_MINIMUM (-32768)
+  0x26, 0xFF, 0x7F,              //     LOGICAL_MAXIMUM (32767)
   0x75, 0x08,                    //     REPORT_SIZE (8)
   0x95, 0x02,                    //     REPORT_COUNT (2)
   0x81, 0x02,                    //     INPUT (Data,Var,Abs)
