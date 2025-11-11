@@ -11,7 +11,7 @@ HIDO supports three distinct operating modes. Choose the one that best fits your
 | **Connection** | USB | USB | RS485 |
 | **Device Type** | HID Keyboard | HID Joystick | JVS I/O Board |
 | **Players** | 2 | 2 | 2 |
-| **Buttons per Player** | Unlimited (mapped to keys) | 16 | 8 |
+| **Buttons per Player** | Unlimited (mapped to keys) | 14 | 8 |
 | **Simultaneous Inputs** | 96 keys (NKRO) | All buttons | All buttons |
 | **Ghosting** | None | None | None |
 | **Polling Rate** | 1000Hz (1ms) | 1000Hz (1ms) | Variable |
@@ -46,10 +46,12 @@ HIDO supports three distinct operating modes. Choose the one that best fits your
 
 ---
 
-### 🕹️ Dual Joystick Mode
+### 🕹️ Dual Joystick Mode (CURRENT)
 
 **Use When:**
-- Playing modern PC games that support joysticks
+- Playing MAME with joystick support
+- Arcade frontends that require separate joystick devices
+- Modern PC games that support joysticks
 - Steam games with gamepad support
 - Fighting games (Street Fighter, Tekken)
 - Shmups and arcade ports
@@ -57,10 +59,12 @@ HIDO supports three distinct operating modes. Choose the one that best fits your
 
 **Advantages:**
 - Native joystick support in many games
-- Two independent controllers (Player 1 & 2)
+- **Two independent controllers** (appears as 2 separate devices in Windows)
+- TWO Application Collections = MAME sees 2 joysticks
 - No key mapping needed in joystick-aware games
 - Works with Steam Big Picture
 - DirectInput/XInput compatible games
+- 14 buttons + 2 axes per joystick
 
 **Limitations:**
 - Some older games don't support joysticks

@@ -1,32 +1,30 @@
 # HIDO - Arcade Multi-Mode Controller
 Open source arcade controller with STM32F102 - Three operating modes for maximum flexibility
 
-## ⚠️ IMPORTANT: Custom Code vs Middleware
+### ⚠️ IMPORTANT: Custom Code vs Middleware
 
-### Problem with previous commits (b76fa87, c5c3dc6)
-These commits modified **middleware files directly**:
+### Current Status (Commit 8d61e2d - Working Solution A)
+The firmware currently modifies **both** custom files and middleware:
+
+**Custom Files (✅ Protected from CubeMX regeneration):**
+- `Core/Inc/usbd_hid_custom.h` - Custom HID definitions
+- `Core/Src/usbd_hid_custom.c` - Custom HID descriptors
+- `Core/Inc/arcade_joystick.h` - Joystick data structures
+- `Core/Src/arcade_joystick.c` - Joystick logic
+
+**Middleware Files (⚠️ Currently modified - Solution A):**
 - `Middlewares/ST/STM32_USB_Device_Library/Class/HID/Inc/usbd_hid.h`
 - `Middlewares/ST/STM32_USB_Device_Library/Class/HID/Src/usbd_hid.c`
 
-**Issue**: STM32CubeMX regeneration **overwrites** these changes!
+**Issue**: STM32CubeMX regeneration **overwrites** middleware changes!
 
-### ✅ Correct Approach (WIP)
-Custom HID descriptors should be in:
-- `Core/Inc/usbd_hid_custom.h` - Custom definitions
-- `Core/Src/usbd_hid_custom.c` - Custom HID descriptor
-
-**Benefits**:
-- ✅ Survives STM32CubeMX regeneration
-- ✅ Clean separation: generated vs custom code
-- ✅ Git tracks only custom files
-
-**Status**: Migration in progress. Current code still uses direct middleware modification.
+**Future Plan (Solution B)**: Fully migrate to custom files only, but for now Solution A works perfectly for dual joystick with 14 buttons + 2 axes each.
 
 ## 🎮 Features
 
 - **Triple Mode Support**: NKRO Keyboard, Dual Joystick, or JVS/RS485
 - **NKRO Keyboard Mode**: Up to 96 keys simultaneously (no ghosting!)
-- **Dual Joystick Mode**: 2 independent USB joysticks (16 buttons + 2 axes each)
+- **Dual Joystick Mode**: 2 independent USB joysticks (14 buttons + 2 axes each)
 - **JVS Protocol Mode**: RS485 arcade I/O board communication
 - **Ultra-Low Latency**: 1ms USB polling (1000Hz) + optimized scanning
 - **Hardware Debouncing**: 5ms configurable debounce time
@@ -36,14 +34,16 @@ Custom HID descriptors should be in:
 
 ### Operating Modes
 
-**Mode Selection** - Edit `Middlewares/ST/STM32_USB_Device_Library/Class/HID/Inc/usbd_hid.h`:
+**Mode Selection** - Edit `Core/Inc/usbd_hid_custom.h`:
 
 Uncomment **ONE** of these modes:
 ```c
-#define USE_KEYBOARD_MODE   // NKRO Keyboard (default)
-// #define USE_JOYSTICK_MODE   // Dual Joystick
-// #define USE_JVS_MODE        // JVS/RS485 Protocol
+//#define USE_KEYBOARD_MODE    // NKRO Keyboard
+#define USE_JOYSTICK_MODE      // Dual Joystick (CURRENT)
+//#define USE_JVS_MODE         // JVS/RS485 Protocol
 ```
+
+**Note**: Also update the same define in `Middlewares/ST/STM32_USB_Device_Library/Class/HID/Inc/usbd_hid.h` until Solution B migration is complete.
 
 ### Mode 1: NKRO Keyboard (USB HID Keyboard)
 
@@ -61,26 +61,35 @@ Uncomment **ONE** of these modes:
 - PA6-7, PA15: Coin/Start → Esc, F1, F2
 - PB2, PB13-15: Service/Test/Extra → F3, F4, F5, F6
 
-### Mode 2: Dual Joystick (USB HID Joystick)
+### Mode 2: Dual Joystick (USB HID Joystick) - CURRENT MODE
 
-Emulates **2 independent USB joysticks** for arcade games that support joystick input.
+Emulates **2 independent USB joysticks** (appears as 2 separate devices in Windows) for arcade games and MAME frontends.
 
-**Player 1 Joystick:**
+**Technical Implementation:**
+- **2 Application Collections** in HID descriptor = 2 separate Windows devices
+- Report ID 1 = Player 1, Report ID 2 = Player 2
+- Report structure: 5 bytes `[ReportID][X][Y][ButtonsLow][ButtonsHigh]`
+- Descriptor size: 102 bytes (51 bytes per joystick collection)
+
+**Player 1 Joystick (Joystick ID 1-4):**
 - PB3-6: Directional axes (Up/Down/Left/Right)
 - PB7-12: Buttons 1-6
 - PA6-7: Coin/Start (Buttons 7-8)
-- PB13-14: Service/Test (Buttons 9-10)
+- PB13-15: Service/Test/Extra (Buttons 9-11)
+- PA8-10: Extra buttons (Buttons 12-14)
 
-**Player 2 Joystick:**
+**Player 2 Joystick (Joystick ID 5-8):**
 - PC0-1, PC5-6: Directional axes
 - PC7-9, PC13-15: Buttons 1-6
 - PA15, PB2: Coin/Start (Buttons 7-8)
+- PA0-5: Extra buttons (Buttons 9-14)
 
 **Joystick Features:**
-- 2 analog axes (X, Y) - digitally controlled by buttons
-- 16 buttons per joystick
+- 2 analog axes (X, Y) per joystick - digitally controlled (0/127/255)
+- 14 buttons per joystick (+ 2 padding bits)
 - Standard USB HID joystick class
 - Compatible with Windows, Linux, macOS
+- MAME and arcade frontend compatible (sees 2 separate controllers)
 
 ### Mode 3: JVS Protocol (RS485 Arcade I/O)
 
@@ -125,7 +134,17 @@ openocd -f interface/stlink.cfg -f target/stm32f1x.cfg -c "program build/hido.el
 
 ## 📝 Configuration
 
-### Change Button Mapping
+### Change Joystick Button Mapping (Current Mode)
+Edit `Core/Src/arcade_joystick.c`, modify the `joystick_map[]` array:
+
+```c
+static const JoystickMapping_t joystick_map[MAX_JOYSTICK_BUTTONS] = {
+    {GPIOB, GPIO_PIN_3,  1, true},  // Port, Pin, Joystick ID (1-8), Active Low
+    // ID 1-4 = Player 1, ID 5-8 = Player 2
+};
+```
+
+### Change Keyboard Button Mapping (Keyboard Mode)
 Edit `Core/Src/arcade_keyboard.c`, modify the `button_map[]` array:
 
 ```c
@@ -147,16 +166,15 @@ static const ButtonMapping_t button_map[MAX_BUTTONS] = {
 Full list: [USB HID Usage Tables](https://usb.org/sites/default/files/hut1_21.pdf)
 
 ### Adjust Debounce Time
-Edit `Core/Inc/arcade_keyboard.h`:
+Edit `Core/Inc/arcade_joystick.h` (Joystick Mode) or `Core/Inc/arcade_keyboard.h` (Keyboard Mode):
 ```c
 #define DEBOUNCE_TIME_MS    5   // Default 5ms
 ```
 
-### Enable JVS Mode (Future)
-Edit `Middlewares/ST/STM32_USB_Device_Library/Class/HID/Inc/usbd_hid.h`:
-```c
-// #define USE_DIRECT_BUTTONS    /* Comment this line */
-```
+### Switch Between Modes
+1. Edit `Core/Inc/usbd_hid_custom.h` - uncomment desired mode
+2. Edit `Middlewares/.../usbd_hid.h` - uncomment same mode (temporary until Solution B)
+3. Recompile and flash firmware
 
 ## 🚀 Performance
 
@@ -196,19 +214,23 @@ Edit `Middlewares/ST/STM32_USB_Device_Library/Class/HID/Inc/usbd_hid.h`:
 **USB Configuration:**
 - VID: 0x0483 (STMicroelectronics)
 - PID: 0x572B
-- Class: HID Keyboard
-- Protocol: NKRO (non-boot compatible)
+- Class: HID (Keyboard or Joystick depending on mode)
+- Current Mode: **Dual Joystick** (2 separate devices)
+- HID Descriptor: 102 bytes (TWO Application Collections)
 
 ## 🔄 Updates from Original
 
 - ✅ Updated USB HID libraries (2015 → modern)
 - ✅ Replaced mouse descriptor with NKRO keyboard
+- ✅ **NEW**: Dual joystick mode with TWO Application Collections (2 separate Windows devices)
 - ✅ Reduced USB interval: 10ms → 1ms (10x faster)
 - ✅ Added GPIO pull-ups for reliable button reading
 - ✅ Implemented proper debouncing algorithm
 - ✅ Removed blocking delays for minimal latency
 - ✅ Added structured button mapping system
 - ✅ Prepared infrastructure for JVS support
+- ✅ Fixed HID descriptor byte count (102 bytes for dual joystick)
+- ✅ MAME/arcade frontend compatible (sees 2 separate controllers)
 
 ## � Credits and Acknowledgments
 

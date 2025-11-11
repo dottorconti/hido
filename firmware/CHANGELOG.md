@@ -1,4 +1,30 @@
-# 🎮 HIDO Arcade Keyboard - Changelog
+# 🎮 HIDO Arcade Controller - Changelog
+
+## Version 2.1 - Dual Joystick Implementation (November 11, 2025)
+
+### 🎮 Dual Joystick Mode - Working Solution A
+
+#### Commit 8d61e2d - Fixed Dual Joystick
+- ✅ **WORKING**: 2 separate joystick devices in Windows
+- ✅ **Technical**: TWO Application Collections in HID descriptor = 2 devices
+- ✅ **Fixed**: Descriptor size corrected to 102 bytes (was 98)
+- ✅ **Report Structure**: 5 bytes `[ReportID][X][Y][ButtonsLow][ButtonsHigh]`
+- ✅ **Each Joystick**: 14 buttons + 2 axes (X, Y)
+- ✅ **MAME Compatible**: Arcade frontends see Player 1 and Player 2 as separate controllers
+
+#### Previous Issues (Resolved)
+- ❌ Commit c5c3dc6: Code 10 error - Insufficient resources
+  - **Cause**: Single Application Collection with Report IDs
+  - **Problem**: Windows saw 1 device trying to allocate resources for 2 reports
+- ✅ Solution: TWO separate `COLLECTION(Application)` blocks
+  - Player 1: REPORT_ID(1) in first Application Collection
+  - Player 2: REPORT_ID(2) in second Application Collection
+
+#### Current Status
+- **Solution A**: Works perfectly but modifies middleware files
+- **Future**: Solution B will migrate fully to custom files only
+
+---
 
 ## Version 2.0 - Complete Rewrite (November 2025)
 

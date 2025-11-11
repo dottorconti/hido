@@ -2,30 +2,34 @@
 
 ## Mode Selection
 
-**File to edit:** `Middlewares/ST/STM32_USB_Device_Library/Class/HID/Inc/usbd_hid.h`
+**Files to edit:** 
+1. `Core/Inc/usbd_hid_custom.h` (primary)
+2. `Middlewares/ST/STM32_USB_Device_Library/Class/HID/Inc/usbd_hid.h` (temporary - Solution A)
 
-Uncomment **ONE** of these three modes:
+Uncomment **ONE** of these three modes in BOTH files:
 
-### Mode 1: NKRO Keyboard (Default)
+### Mode 1: NKRO Keyboard
 ```c
 #define USE_KEYBOARD_MODE      // USB HID Keyboard with 96-key NKRO
-// #define USE_JOYSTICK_MODE   // Comment out other modes
-// #define USE_JVS_MODE        // Comment out other modes
+//#define USE_JOYSTICK_MODE    // Comment out other modes
+//#define USE_JVS_MODE         // Comment out other modes
 ```
 
-### Mode 2: Dual Joystick
+### Mode 2: Dual Joystick (CURRENT)
 ```c
-// #define USE_KEYBOARD_MODE   // Comment out other modes
-#define USE_JOYSTICK_MODE      // 2 USB HID Joysticks (16 buttons each)
-// #define USE_JVS_MODE        // Comment out other modes
+//#define USE_KEYBOARD_MODE    // Comment out other modes
+#define USE_JOYSTICK_MODE      // 2 USB HID Joysticks (14 buttons each)
+//#define USE_JVS_MODE         // Comment out other modes
 ```
 
 ### Mode 3: JVS Protocol (RS485)
 ```c
-// #define USE_KEYBOARD_MODE   // Comment out other modes
-// #define USE_JOYSTICK_MODE   // Comment out other modes
+//#define USE_KEYBOARD_MODE    // Comment out other modes
+//#define USE_JOYSTICK_MODE    // Comment out other modes
 #define USE_JVS_MODE           // JVS/RS485 arcade I/O board
 ```
+
+**Note**: You must update the mode in both files until Solution B migration is complete.
 
 ## Compilation
 
@@ -65,15 +69,18 @@ make -j4
 6. All 27 buttons should work simultaneously (NKRO)
 7. LED1 blinks once at startup
 
-### Mode 2: Dual Joystick
-1. Compile with `USE_JOYSTICK_MODE` defined
+### Mode 2: Dual Joystick (CURRENT MODE)
+1. Compile with `USE_JOYSTICK_MODE` defined (in both files)
 2. Flash firmware
 3. Connect USB to PC
-4. Device appears as 2 separate joysticks
-5. Test in Windows: Settings → Devices → Printers & Scanners → Game Controllers
+4. **Device appears as 2 separate joysticks** (TWO Application Collections)
+5. Test in Windows: 
+   - Control Panel → Devices and Printers → Game Controllers (should show 2 devices)
+   - Or press Win+R → `joy.cpl` → Should list 2 controllers
 6. Or use joystick testing tool: https://hardwaretester.com/gamepad
-7. Press buttons to see joystick response
-8. LED1 blinks once at startup
+7. Each joystick has: 2 axes (X, Y) + 14 buttons
+8. MAME/arcade frontends will see Player 1 and Player 2 as separate controllers
+9. LED1 blinks once at startup
 
 ### Mode 3: JVS Protocol
 1. Compile with `USE_JVS_MODE` defined
