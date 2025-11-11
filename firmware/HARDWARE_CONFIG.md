@@ -1,5 +1,13 @@
 # HIDO - Hardware Configuration Guide
 
+## ⚙️ Current Mode: Dual Joystick (14 buttons + 2 axes each)
+
+**Active Configuration**: `USE_JOYSTICK_MODE` in `Core/Inc/usbd_hid_custom.h`
+
+For **Keyboard Mode** mapping, see below. For **Joystick Mode**, buttons are mapped to joystick IDs 1-8 (Player 1: 1-4, Player 2: 5-8) in `Core/Src/arcade_joystick.c`.
+
+---
+
 ## 📌 GPIO Pin Mapping
 
 ### Input Pins (Arcade Buttons)
@@ -88,6 +96,21 @@ LED turns ON when GPIO is HIGH
 
 ## 🛠️ Customizing Button Mapping
 
+### For Joystick Mode (CURRENT)
+Edit `Core/Src/arcade_joystick.c`, locate `joystick_map[]` array:
+
+```c
+static const JoystickMapping_t joystick_map[MAX_JOYSTICK_BUTTONS] = {
+    // {Port,      Pin,           Joystick_ID, Active_Low}
+    {GPIOB, GPIO_PIN_3,  1, true},  // PB3 -> Joystick 1 (P1 Up)
+    {GPIOB, GPIO_PIN_4,  2, true},  // PB4 -> Joystick 2 (P1 Down)
+    // Joystick ID 1-4 = Player 1, ID 5-8 = Player 2
+    
+    // Buttons are automatically assigned sequentially
+};
+```
+
+### For Keyboard Mode
 Edit `Core/Src/arcade_keyboard.c`, locate `button_map[]` array:
 
 ```c
@@ -139,7 +162,7 @@ GPIO Pin ----[10nF ceramic capacitor]---- GND
 ```
 
 ### 3. Adjust Debounce Time
-In `Core/Inc/arcade_keyboard.h`:
+In `Core/Inc/arcade_joystick.h` (Joystick Mode) or `Core/Inc/arcade_keyboard.h` (Keyboard Mode):
 ```c
 #define DEBOUNCE_TIME_MS    5   // Reduce to 3ms for faster response
                                  // Increase to 10ms for noisy buttons
