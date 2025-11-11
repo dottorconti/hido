@@ -39,6 +39,12 @@
 #elif defined(USE_JVS_MODE)
 #include "jvs_protocol.h"
 #endif
+
+/* GPIO Diagnostic Test */
+// #define GPIO_TEST_MODE  /* Uncomment to enable GPIO diagnostic test */
+#ifdef GPIO_TEST_MODE
+#include "gpio_test.h"
+#endif
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -131,7 +137,12 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-#ifdef USE_KEYBOARD_MODE
+#ifdef GPIO_TEST_MODE
+    /* GPIO Diagnostic Mode - Test all pins and print to UART */
+    GPIO_ContinuousTest();
+    HAL_Delay(10);  /* Small delay to prevent UART overflow */
+    
+#elif defined(USE_KEYBOARD_MODE)
     /* USB HID Keyboard mode - High-speed button scanning with minimal latency */
     
     /* Scan buttons as fast as possible, but debounce handles timing */
