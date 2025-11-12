@@ -109,7 +109,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USB_DEVICE_Init();
-  MX_ADC1_Init();
+  // MX_ADC1_Init();  /* Disabled - ADC pins used as digital inputs for buttons */
   MX_TIM2_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();

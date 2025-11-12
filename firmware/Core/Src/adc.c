@@ -111,24 +111,18 @@ void MX_ADC1_Init(void)
 
 void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
 {
-
+  /* DISABLED - ADC pins (PC2, PC3, PB0, PB1) used as digital inputs for buttons */
+  /* Keep function stub to avoid linker errors */
+  (void)adcHandle; /* Unused parameter */
+  
+  /* Original GPIO configuration commented out:
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   if(adcHandle->Instance==ADC1)
   {
-  /* USER CODE BEGIN ADC1_MspInit 0 */
-
-  /* USER CODE END ADC1_MspInit 0 */
-    /* ADC1 clock enable */
     __HAL_RCC_ADC1_CLK_ENABLE();
-
     __HAL_RCC_GPIOC_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
-    /**ADC1 GPIO Configuration
-    PC2     ------> ADC1_IN12
-    PC3     ------> ADC1_IN13
-    PB0     ------> ADC1_IN8
-    PB1     ------> ADC1_IN9
-    */
+    
     GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_3;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
@@ -137,13 +131,10 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-    /* ADC1 interrupt Init */
     HAL_NVIC_SetPriority(ADC1_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(ADC1_IRQn);
-  /* USER CODE BEGIN ADC1_MspInit 1 */
-
-  /* USER CODE END ADC1_MspInit 1 */
   }
+  */
 }
 
 void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)

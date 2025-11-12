@@ -30,46 +30,49 @@ static JoystickReport_t joystick_report[2] = {
 static uint32_t button_state[32] = {0};      /* Current state */
 static uint32_t button_last_time[32] = {0};  /* Last change time */
 
-/* Button mapping - Player 1 and Player 2 using new pin definitions from main.h */
+/* Button mapping - Player 1 and Player 2 - 4 axes + 13 buttons each */
 static const JoystickButtonMapping_t button_map[] = {
-    /* Player 1 - Joystick directions */
-    {P1_UP_GPIO_Port, P1_UP_Pin, 1, 255, 1, true},        /* PA1 - Up */
-    {P1_DOWN_GPIO_Port, P1_DOWN_Pin, 1, 255, 2, true},    /* PA0 - Down */
+    /* Player 1 - 4 Joystick directions: IN26, IN12, IN11, IN10 */
+    {P1_UP_GPIO_Port, P1_UP_Pin, 1, 255, 1, true},        /* PA15 - Up (IN26) */
+    {P1_DOWN_GPIO_Port, P1_DOWN_Pin, 1, 255, 2, true},    /* PB3 - Down (IN12) */
+    {P1_LEFT_GPIO_Port, P1_LEFT_Pin, 1, 255, 3, true},    /* PB4 - Left (IN11) */
+    {P1_RIGHT_GPIO_Port, P1_RIGHT_Pin, 1, 255, 4, true},  /* PB5 - Right (IN10) */
     
-    /* Player 1 - Buttons (0-15) */
-    {P1_BTN1_GPIO_Port, P1_BTN1_Pin, 1, 0, 0, true},      /* PC1 - Button 1 */
-    {P1_BTN2_GPIO_Port, P1_BTN2_Pin, 1, 1, 0, true},      /* PC0 - Button 2 */
-    {P1_BTN3_GPIO_Port, P1_BTN3_Pin, 1, 2, 0, true},      /* PC15 - Button 3 */
-    {P1_BTN4_GPIO_Port, P1_BTN4_Pin, 1, 3, 0, true},      /* PC14 - Button 4 */
-    {P1_BTN5_GPIO_Port, P1_BTN5_Pin, 1, 4, 0, true},      /* PC13 - Button 5 */
-    {P1_BTN6_GPIO_Port, P1_BTN6_Pin, 1, 5, 0, true},      /* PB9 - Button 6 */
-    {P1_BTN7_GPIO_Port, P1_BTN7_Pin, 1, 6, 0, true},      /* PB8 - Button 7 */
-    {P1_BTN8_GPIO_Port, P1_BTN8_Pin, 1, 7, 0, true},      /* PB7 - Button 8 */
-    {P1_BTN9_GPIO_Port, P1_BTN9_Pin, 1, 8, 0, true},      /* PB6 - Button 9 */
-    {P1_BTN10_GPIO_Port, P1_BTN10_Pin, 1, 9, 0, true},    /* PB5 - Button 10 */
-    {P1_BTN11_GPIO_Port, P1_BTN11_Pin, 1, 10, 0, true},   /* PB4 - Button 11 */
-    {P1_BTN12_GPIO_Port, P1_BTN12_Pin, 1, 11, 0, true},   /* PB3 - Button 12 */
-    {P1_START_GPIO_Port, P1_START_Pin, 1, 12, 0, true},   /* PA15 - Button 13 (Start) */
-    {P1_UP_GPIO_Port, P1_UP_Pin, 1, 13, 0, true},         /* PA1 - Button 14 (can be dual-mapped) */
+    /* Player 1 - 13 Buttons (0-12): TIM1, TIM2, ADC1, ADC2, IN1-IN9 */
+    {P1_BTN1_GPIO_Port, P1_BTN1_Pin, 1, 0, 0, true},      /* PA1 - Button 1 (TIM1) */
+    {P1_BTN2_GPIO_Port, P1_BTN2_Pin, 1, 1, 0, true},      /* PA0 - Button 2 (TIM2) */
+    {P1_BTN3_GPIO_Port, P1_BTN3_Pin, 1, 2, 0, true},      /* PC2 - Button 3 (ADC1) */
+    {P1_BTN4_GPIO_Port, P1_BTN4_Pin, 1, 3, 0, true},      /* PC3 - Button 4 (ADC2) */
+    {P1_BTN5_GPIO_Port, P1_BTN5_Pin, 1, 4, 0, true},      /* PC1 - Button 5 (IN1) */
+    {P1_BTN6_GPIO_Port, P1_BTN6_Pin, 1, 5, 0, true},      /* PC0 - Button 6 (IN2) */
+    {P1_BTN7_GPIO_Port, P1_BTN7_Pin, 1, 6, 0, true},      /* PC15 - Button 7 (IN3) */
+    {P1_BTN8_GPIO_Port, P1_BTN8_Pin, 1, 7, 0, true},      /* PC14 - Button 8 (IN4) */
+    {P1_BTN9_GPIO_Port, P1_BTN9_Pin, 1, 8, 0, true},      /* PC13 - Button 9 (IN5) */
+    {P1_BTN10_GPIO_Port, P1_BTN10_Pin, 1, 9, 0, true},    /* PB9 - Button 10 (IN6) */
+    {P1_BTN11_GPIO_Port, P1_BTN11_Pin, 1, 10, 0, true},   /* PB8 - Button 11 (IN7) */
+    {P1_BTN12_GPIO_Port, P1_BTN12_Pin, 1, 11, 0, true},   /* PB7 - Button 12 (IN8) */
+    {P1_BTN13_GPIO_Port, P1_BTN13_Pin, 1, 12, 0, true},   /* PB6 - Button 13 (IN9) */
     
-    /* Player 2 - Joystick directions */
-    {P2_UP_GPIO_Port, P2_UP_Pin, 2, 255, 1, true},        /* PC6 - Up */
-    {P2_DOWN_GPIO_Port, P2_DOWN_Pin, 2, 255, 2, true},    /* PC7 - Down */
+    /* Player 2 - 4 Joystick directions: IN25, IN24, IN23, TIM4 */
+    {P2_UP_GPIO_Port, P2_UP_Pin, 2, 255, 1, true},        /* PA6 - Up (IN25) */
+    {P2_DOWN_GPIO_Port, P2_DOWN_Pin, 2, 255, 2, true},    /* PC9 - Down (IN24) */
+    {P2_LEFT_GPIO_Port, P2_LEFT_Pin, 2, 255, 3, true},    /* PC8 - Left (IN23) */
+    {P2_RIGHT_GPIO_Port, P2_RIGHT_Pin, 2, 255, 4, true},  /* PC7 - Right (TIM4) */
     
-    /* Player 2 - Buttons (0-15) */
-    {P2_BTN1_GPIO_Port, P2_BTN1_Pin, 2, 0, 0, true},      /* PA7 - Button 1 */
-    {P2_BTN2_GPIO_Port, P2_BTN2_Pin, 2, 1, 0, true},      /* PC4 - Button 2 */
-    {P2_BTN3_GPIO_Port, P2_BTN3_Pin, 2, 2, 0, true},      /* PC5 - Button 3 */
-    {P2_BTN4_GPIO_Port, P2_BTN4_Pin, 2, 3, 0, true},      /* PB2 - Button 4 */
-    {P2_BTN5_GPIO_Port, P2_BTN5_Pin, 2, 4, 0, true},      /* PB10 - Button 5 */
-    {P2_BTN6_GPIO_Port, P2_BTN6_Pin, 2, 5, 0, true},      /* PB11 - Button 6 */
-    {P2_BTN7_GPIO_Port, P2_BTN7_Pin, 2, 6, 0, true},      /* PB12 - Button 7 */
-    {P2_BTN8_GPIO_Port, P2_BTN8_Pin, 2, 7, 0, true},      /* PB13 - Button 8 */
-    {P2_BTN9_GPIO_Port, P2_BTN9_Pin, 2, 8, 0, true},      /* PB14 - Button 9 */
-    {P2_BTN10_GPIO_Port, P2_BTN10_Pin, 2, 9, 0, true},    /* PB15 - Button 10 */
-    {P2_BTN11_GPIO_Port, P2_BTN11_Pin, 2, 10, 0, true},   /* PC8 - Button 11 */
-    {P2_BTN12_GPIO_Port, P2_BTN12_Pin, 2, 11, 0, true},   /* PC9 - Button 12 */
-    {P2_START_GPIO_Port, P2_START_Pin, 2, 12, 0, true},   /* PA6 - Start */
+    /* Player 2 - 13 Buttons (0-12): IN13-IN15, IN16-IN22, TIM3, ADC3, ADC4 */
+    {P2_BTN1_GPIO_Port, P2_BTN1_Pin, 2, 0, 0, true},      /* PA7 - Button 1 (IN13) */
+    {P2_BTN2_GPIO_Port, P2_BTN2_Pin, 2, 1, 0, true},      /* PC4 - Button 2 (IN14) */
+    {P2_BTN3_GPIO_Port, P2_BTN3_Pin, 2, 2, 0, true},      /* PC5 - Button 3 (IN15) */
+    {P2_BTN4_GPIO_Port, P2_BTN4_Pin, 2, 3, 0, true},      /* PB2 - Button 4 (IN16) */
+    {P2_BTN5_GPIO_Port, P2_BTN5_Pin, 2, 4, 0, true},      /* PB10 - Button 5 (IN17) */
+    {P2_BTN6_GPIO_Port, P2_BTN6_Pin, 2, 5, 0, true},      /* PB11 - Button 6 (IN18) */
+    {P2_BTN7_GPIO_Port, P2_BTN7_Pin, 2, 6, 0, true},      /* PB12 - Button 7 (IN19) */
+    {P2_BTN8_GPIO_Port, P2_BTN8_Pin, 2, 7, 0, true},      /* PB13 - Button 8 (IN20) */
+    {P2_BTN9_GPIO_Port, P2_BTN9_Pin, 2, 8, 0, true},      /* PB14 - Button 9 (IN21) */
+    {P2_BTN10_GPIO_Port, P2_BTN10_Pin, 2, 9, 0, true},    /* PB15 - Button 10 (IN22) */
+    {P2_BTN11_GPIO_Port, P2_BTN11_Pin, 2, 10, 0, true},   /* PC6 - Button 11 (TIM3) */
+    {P2_BTN12_GPIO_Port, P2_BTN12_Pin, 2, 11, 0, true},   /* PB0 - Button 12 (ADC3) */
+    {P2_BTN13_GPIO_Port, P2_BTN13_Pin, 2, 12, 0, true},   /* PB1 - Button 13 (ADC4) */
 };
 
 #define BUTTON_MAP_SIZE (sizeof(button_map) / sizeof(button_map[0]))
@@ -100,12 +103,14 @@ void Joystick_Init(void)
 void Joystick_ProcessButtons(void)
 {
     uint32_t current_time = HAL_GetTick();
+    static bool player_activity[2] = {false, false};
     
     /* Reset both joysticks to center and clear buttons */
     for (uint8_t player = 0; player < 2; player++) {
         joystick_report[player].x = 127;
         joystick_report[player].y = 127;
         joystick_report[player].buttons = 0;
+        player_activity[player] = false;
     }
     
     /* Scan all mapped buttons for both players */
@@ -130,6 +135,8 @@ void Joystick_ProcessButtons(void)
         
         /* Update joystick state if button is pressed */
         if (button_state[i]) {
+            player_activity[player_idx] = true;  // Mark activity for LED blink
+            
             if (mapping->button_num == 255) {
                 /* Axis direction */
                 switch (mapping->axis_dir) {
@@ -139,13 +146,21 @@ void Joystick_ProcessButtons(void)
                     case 4: joystick_report[player_idx].x = 255; break;  /* Right */
                 }
             } else {
-                /* Button press (0-13 for 14 buttons) */
-                if (mapping->button_num < 14) {
+                /* Button press (0-12 for 13 buttons) */
+                if (mapping->button_num < 13) {
                     joystick_report[player_idx].buttons |= (1 << mapping->button_num);
                 }
             }
         }
     }
+    
+    /* Mask buttons to ensure only 13 bits are used (bits 0-12), bits 13-15 must be 0 */
+    joystick_report[0].buttons &= 0x1FFF;  // 0001111111111111 = mask for 13 bits
+    joystick_report[1].buttons &= 0x1FFF;
+    
+    /* LED blink for activity - Player 1: LED1, Player 2: LED2 */
+    HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, player_activity[0] ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, player_activity[1] ? GPIO_PIN_SET : GPIO_PIN_RESET);
 }
 
 /**

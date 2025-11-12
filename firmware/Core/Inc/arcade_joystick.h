@@ -31,7 +31,7 @@ typedef struct {
     uint8_t report_id;      /* Report ID: 1=Player1, 2=Player2 */
     uint8_t x;              /* X axis: 0-255 (127=center) */
     uint8_t y;              /* Y axis: 0-255 (127=center) */
-    uint16_t buttons;       /* 14 buttons (bits 0-13) + 2 padding (bits 14-15) */
+    uint16_t buttons;       /* 13 buttons (bits 0-12) + 3 padding (bits 13-15, must be 0) */
 } __attribute__((packed)) JoystickReport_t;
 
 /* Button mapping structure */

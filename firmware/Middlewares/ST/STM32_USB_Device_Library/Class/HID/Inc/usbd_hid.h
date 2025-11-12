@@ -43,13 +43,13 @@ extern "C" {
   */
 
 /* Mode selection - uncomment only ONE */
-//#define USE_KEYBOARD_MODE    // NKRO Keyboard mode
-#define USE_JOYSTICK_MODE  // Arcade Joystick mode
+#define USE_KEYBOARD_MODE    // NKRO Keyboard mode
+//#define USE_JOYSTICK_MODE  // Arcade Joystick mode
 //#define USE_JVS_MODE       // JVS protocol mode
 
 #ifdef USE_KEYBOARD_MODE
-  #define HID_EPIN_SIZE                 0x09U  // 8 bytes + 1 modifier for NKRO keyboard
-  #define HID_REPORT_DESC_SIZE          63U    // NKRO keyboard descriptor size
+  #define HID_EPIN_SIZE                 0x09U  // 1 ReportID + 1 Modifier + 1 Reserved + 6 Keys = 9 bytes
+  #define HID_REPORT_DESC_SIZE          47U    // Standard 6KRO keyboard descriptor size
 #elif defined(USE_JOYSTICK_MODE)
   #define HID_EPIN_SIZE                 0x06U  // 5 bytes: Report ID + 2 axes + 2 bytes buttons
   #define HID_REPORT_DESC_SIZE          102U   // Dual joystick (2 Application Collections = 2 devices)

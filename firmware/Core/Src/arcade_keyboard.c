@@ -13,6 +13,7 @@
 #include "arcade_keyboard.h"
 #include "usbd_hid.h"
 #include "usb_device.h"
+#include "main.h"
 #include <string.h>
 
 /* External USB Device handle */
@@ -26,46 +27,49 @@ static NKRO_KeyboardReport_t previous_report = {0};
 static uint32_t button_state[MAX_BUTTONS] = {0};      /* Current stable state */
 static uint32_t button_debounce[MAX_BUTTONS] = {0};   /* Debounce counter */
 
-/* Button to keyboard mapping - Configura questi in base al tuo hardware!
- * Esempio mapping per cabinet arcade standard:
- * Player 1: Stick (arrows) + 6 buttons
- * Player 2: WASD + 6 buttons  
+/* Button to keyboard mapping - Mapped to actual hardware pins from main.h
+ * Player 1 (J6): 4 directions + 13 buttons = 17 inputs
+ * Player 2 (J7): 4 directions + 13 buttons = 17 inputs
+ * Total: 34 inputs
  */
 static const ButtonMapping_t button_map[MAX_BUTTONS] = {
-    /* Player 1 Controls */
-    {GPIOB, GPIO_PIN_3,  0x50, true},  // P1 Up     -> Left Arrow
-    {GPIOB, GPIO_PIN_4,  0x51, true},  // P1 Down   -> Down Arrow
-    {GPIOB, GPIO_PIN_5,  0x4F, true},  // P1 Left   -> Right Arrow  
-    {GPIOB, GPIO_PIN_6,  0x52, true},  // P1 Right  -> Up Arrow
-    {GPIOB, GPIO_PIN_7,  0x2C, true},  // P1 Button1 -> Space
-    {GPIOB, GPIO_PIN_8,  0x38, true},  // P1 Button2 -> /
-    {GPIOB, GPIO_PIN_9,  0x1C, true},  // P1 Button3 -> Y
-    {GPIOB, GPIO_PIN_10, 0x17, true},  // P1 Button4 -> T
-    {GPIOB, GPIO_PIN_11, 0x15, true},  // P1 Button5 -> R
-    {GPIOB, GPIO_PIN_12, 0x09, true},  // P1 Button6 -> F
+    /* Player 1 Controls (indices 0-16) */
+    {P1_UP_GPIO_Port,    P1_UP_Pin,     0x52, true},  // P1 Up      -> Up Arrow
+    {P1_DOWN_GPIO_Port,  P1_DOWN_Pin,   0x51, true},  // P1 Down    -> Down Arrow
+    {P1_LEFT_GPIO_Port,  P1_LEFT_Pin,   0x50, true},  // P1 Left    -> Left Arrow
+    {P1_RIGHT_GPIO_Port, P1_RIGHT_Pin,  0x4F, true},  // P1 Right   -> Right Arrow
+    {P1_BTN1_GPIO_Port,  P1_BTN1_Pin,   0x1D, true},  // P1 Button1 -> Z
+    {P1_BTN2_GPIO_Port,  P1_BTN2_Pin,   0x1B, true},  // P1 Button2 -> X
+    {P1_BTN3_GPIO_Port,  P1_BTN3_Pin,   0x06, true},  // P1 Button3 -> C
+    {P1_BTN4_GPIO_Port,  P1_BTN4_Pin,   0x19, true},  // P1 Button4 -> V
+    {P1_BTN5_GPIO_Port,  P1_BTN5_Pin,   0x05, true},  // P1 Button5 -> B
+    {P1_BTN6_GPIO_Port,  P1_BTN6_Pin,   0x11, true},  // P1 Button6 -> N
+    {P1_BTN7_GPIO_Port,  P1_BTN7_Pin,   0x10, true},  // P1 Button7 -> M
+    {P1_BTN8_GPIO_Port,  P1_BTN8_Pin,   0x14, true},  // P1 Button8 -> Q
+    {P1_BTN9_GPIO_Port,  P1_BTN9_Pin,   0x1A, true},  // P1 Button9 -> W
+    {P1_BTN10_GPIO_Port, P1_BTN10_Pin,  0x08, true},  // P1 Button10 -> E
+    {P1_BTN11_GPIO_Port, P1_BTN11_Pin,  0x15, true},  // P1 Button11 -> R
+    {P1_BTN12_GPIO_Port, P1_BTN12_Pin,  0x17, true},  // P1 Button12 -> T
+    {P1_BTN13_GPIO_Port, P1_BTN13_Pin,  0x1C, true},  // P1 Button13 -> Y
     
-    /* Player 2 Controls */
-    {GPIOC, GPIO_PIN_0,  0x1D, true},  // P2 Up     -> W
-    {GPIOC, GPIO_PIN_1,  0x16, true},  // P2 Down   -> S
-    {GPIOC, GPIO_PIN_5,  0x04, true},  // P2 Left   -> A
-    {GPIOC, GPIO_PIN_6,  0x07, true},  // P2 Right  -> D
-    {GPIOC, GPIO_PIN_7,  0x14, true},  // P2 Button1 -> Q
-    {GPIOC, GPIO_PIN_8,  0x1A, true},  // P2 Button2 -> W (duplicate use)
-    {GPIOC, GPIO_PIN_9,  0x08, true},  // P2 Button3 -> E
-    {GPIOC, GPIO_PIN_13, 0x12, true},  // P2 Button4 -> O
-    {GPIOC, GPIO_PIN_14, 0x0C, true},  // P2 Button5 -> I
-    {GPIOC, GPIO_PIN_15, 0x18, true},  // P2 Button6 -> U
-    
-    /* Coin/Start buttons */
-    {GPIOA, GPIO_PIN_6,  0x29, true},  // Coin 1    -> Esc
-    {GPIOA, GPIO_PIN_7,  0x3A, true},  // Start 1   -> F1
-    {GPIOA, GPIO_PIN_15, 0x3B, true},  // Start 2   -> F2
-    
-    /* Extra buttons */
-    {GPIOB, GPIO_PIN_2,  0x3C, true},  // Service   -> F3
-    {GPIOB, GPIO_PIN_13, 0x3D, true},  // Test      -> F4
-    {GPIOB, GPIO_PIN_14, 0x3E, true},  // Extra 1   -> F5
-    {GPIOB, GPIO_PIN_15, 0x3F, true},  // Extra 2   -> F6
+    /* Player 2 Controls (indices 17-33) */
+    {P2_UP_GPIO_Port,    P2_UP_Pin,     0x3A, true},  // P2 Up      -> F1
+    {P2_DOWN_GPIO_Port,  P2_DOWN_Pin,   0x3B, true},  // P2 Down    -> F2
+    {P2_LEFT_GPIO_Port,  P2_LEFT_Pin,   0x3C, true},  // P2 Left    -> F3
+    {P2_RIGHT_GPIO_Port, P2_RIGHT_Pin,  0x3D, true},  // P2 Right   -> F4
+    {P2_BTN1_GPIO_Port,  P2_BTN1_Pin,   0x04, true},  // P2 Button1 -> A
+    {P2_BTN2_GPIO_Port,  P2_BTN2_Pin,   0x16, true},  // P2 Button2 -> S
+    {P2_BTN3_GPIO_Port,  P2_BTN3_Pin,   0x07, true},  // P2 Button3 -> D
+    {P2_BTN4_GPIO_Port,  P2_BTN4_Pin,   0x09, true},  // P2 Button4 -> F
+    {P2_BTN5_GPIO_Port,  P2_BTN5_Pin,   0x0A, true},  // P2 Button5 -> G
+    {P2_BTN6_GPIO_Port,  P2_BTN6_Pin,   0x0B, true},  // P2 Button6 -> H
+    {P2_BTN7_GPIO_Port,  P2_BTN7_Pin,   0x0D, true},  // P2 Button7 -> J
+    {P2_BTN8_GPIO_Port,  P2_BTN8_Pin,   0x0E, true},  // P2 Button8 -> K
+    {P2_BTN9_GPIO_Port,  P2_BTN9_Pin,   0x0F, true},  // P2 Button9 -> L
+    {P2_BTN10_GPIO_Port, P2_BTN10_Pin,  0x18, true},  // P2 Button10 -> U
+    {P2_BTN11_GPIO_Port, P2_BTN11_Pin,  0x0C, true},  // P2 Button11 -> I
+    {P2_BTN12_GPIO_Port, P2_BTN12_Pin,  0x12, true},  // P2 Button12 -> O
+    {P2_BTN13_GPIO_Port, P2_BTN13_Pin,  0x13, true},  // P2 Button13 -> P
     
     /* Unused slots */
     {NULL, 0, 0, false},
@@ -109,33 +113,24 @@ static inline bool ReadButton(const ButtonMapping_t* mapping)
 }
 
 /**
-  * @brief  Set key in NKRO bitmap
+  * @brief  Add key to 6KRO report
   * @param  report: Keyboard report
-  * @param  keycode: USB HID keycode (0-95)
+  * @param  keycode: USB HID keycode
   */
-static inline void SetKey(NKRO_KeyboardReport_t* report, uint8_t keycode)
+static inline void AddKey(NKRO_KeyboardReport_t* report, uint8_t keycode)
 {
-    if (keycode >= 96) return;
-    
-    uint8_t byte_index = keycode / 8;
-    uint8_t bit_index = keycode % 8;
-    
-    report->keys[byte_index] |= (1 << bit_index);
-}
-
-/**
-  * @brief  Clear key in NKRO bitmap
-  * @param  report: Keyboard report
-  * @param  keycode: USB HID keycode (0-95)
-  */
-static inline void ClearKey(NKRO_KeyboardReport_t* report, uint8_t keycode)
-{
-    if (keycode >= 96) return;
-    
-    uint8_t byte_index = keycode / 8;
-    uint8_t bit_index = keycode % 8;
-    
-    report->keys[byte_index] &= ~(1 << bit_index);
+    /* Find first empty slot (0 = no key) */
+    for (int i = 0; i < 6; i++) {
+        if (report->keys[i] == 0) {
+            report->keys[i] = keycode;
+            return;
+        }
+        /* Avoid duplicates */
+        if (report->keys[i] == keycode) {
+            return;
+        }
+    }
+    /* All slots full - key will be ignored (6KRO limit) */
 }
 
 /**
@@ -144,9 +139,12 @@ static inline void ClearKey(NKRO_KeyboardReport_t* report, uint8_t keycode)
 void Arcade_ProcessButtons(void)
 {
     uint32_t current_time = HAL_GetTick();
+    bool p1_active = false;
+    bool p2_active = false;
     
     /* Clear current report */
     memset(&current_report, 0, sizeof(NKRO_KeyboardReport_t));
+    current_report.report_id = 1;  /* Set Report ID */
     
     /* Scan all buttons */
     for (int i = 0; i < MAX_BUTTONS; i++) {
@@ -167,11 +165,22 @@ void Arcade_ProcessButtons(void)
             button_debounce[i] = 0;
         }
         
-        /* Add pressed button to report */
+        /* Add pressed button to report (max 6 keys) */
         if (button_state[i]) {
-            SetKey(&current_report, button_map[i].keycode);
+            AddKey(&current_report, button_map[i].keycode);
+            
+            /* Track which player is active (0-16 = P1, 17-33 = P2) */
+            if (i < 17) {
+                p1_active = true;
+            } else if (i < 34) {
+                p2_active = true;
+            }
         }
     }
+    
+    /* LED Debug: LED1 for P1, LED2 for P2 */
+    HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, p1_active ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, p2_active ? GPIO_PIN_SET : GPIO_PIN_RESET);
 }
 
 /**

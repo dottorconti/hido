@@ -26,11 +26,12 @@ extern "C" {
 #define USE_DIRECT_BUTTONS      /* Comment to enable JVS mode */
 #define MAX_BUTTONS             32  /* Maximum number of arcade buttons */
 
-/* HID Keyboard Report Structure (14 bytes for NKRO) */
+/* HID Keyboard Report Structure (9 bytes: 1 ReportID + 8 data bytes) */
 typedef struct {
+    uint8_t report_id;      /* Report ID = 1 */
     uint8_t modifiers;      /* Modifier keys (Ctrl, Shift, Alt, GUI) */
     uint8_t reserved;       /* Reserved byte */
-    uint8_t keys[12];       /* 96-bit bitmap for keys (12 bytes = 96 keys) */
+    uint8_t keys[6];        /* 6 simultaneous keys (standard 6KRO) */
 } NKRO_KeyboardReport_t;
 
 /* Button mapping structure */

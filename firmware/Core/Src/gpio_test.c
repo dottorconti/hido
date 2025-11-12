@@ -74,8 +74,8 @@ void GPIO_TestAllPins(void)
              HAL_GPIO_ReadPin(P1_BTN8_GPIO_Port, P1_BTN8_Pin) == GPIO_PIN_RESET ? "LOW (Pressed)" : "HIGH");
     UART_Print(uart_buffer);
     
-    snprintf(uart_buffer, sizeof(uart_buffer), "P1_START (PA15): %s\r\n", 
-             HAL_GPIO_ReadPin(P1_START_GPIO_Port, P1_START_Pin) == GPIO_PIN_RESET ? "LOW (Pressed)" : "HIGH");
+    snprintf(uart_buffer, sizeof(uart_buffer), "P1_BTN13 (PA15): %s\r\n", 
+             HAL_GPIO_ReadPin(P1_BTN13_GPIO_Port, P1_BTN13_Pin) == GPIO_PIN_RESET ? "LOW (Pressed)" : "HIGH");
     UART_Print(uart_buffer);
     
     /* Test Player 2 */
@@ -101,8 +101,8 @@ void GPIO_TestAllPins(void)
              HAL_GPIO_ReadPin(P2_BTN3_GPIO_Port, P2_BTN3_Pin) == GPIO_PIN_RESET ? "LOW (Pressed)" : "HIGH");
     UART_Print(uart_buffer);
     
-    snprintf(uart_buffer, sizeof(uart_buffer), "P2_START (PA6):  %s\r\n", 
-             HAL_GPIO_ReadPin(P2_START_GPIO_Port, P2_START_Pin) == GPIO_PIN_RESET ? "LOW (Pressed)" : "HIGH");
+    snprintf(uart_buffer, sizeof(uart_buffer), "P2_BTN13 (PC6):  %s\r\n", 
+             HAL_GPIO_ReadPin(P2_BTN13_GPIO_Port, P2_BTN13_Pin) == GPIO_PIN_RESET ? "LOW (Pressed)" : "HIGH");
     UART_Print(uart_buffer);
     
     UART_Print("\r\n===================================\r\n\r\n");

@@ -14,8 +14,8 @@
 /**
   * @brief  Custom HID Report Descriptor for Dual Arcade Joystick
   *         - TWO separate Application Collections = 2 devices in Windows
-  *         - Player 1: Report ID 1, 2 axes + 14 buttons
-  *         - Player 2: Report ID 2, 2 axes + 14 buttons
+  *         - Player 1: Report ID 1, 2 axes + 13 buttons
+  *         - Player 2: Report ID 2, 2 axes + 13 buttons
   *         - Report structure: 5 bytes [ReportID][X][Y][BtnLow][BtnHigh]
   *         - Windows sees: 2 separate joystick devices
   *         - Descriptor size: 98 bytes
@@ -42,16 +42,16 @@ const uint8_t HID_JOYSTICK_ReportDesc_Custom[HID_REPORT_DESC_SIZE_CUSTOM] = {
     /* Player 1 Buttons */
     0x05, 0x09,        //   USAGE_PAGE (Button)
     0x19, 0x01,        //   USAGE_MINIMUM (Button 1)
-    0x29, 0x0E,        //   USAGE_MAXIMUM (Button 14)
+    0x29, 0x0D,        //   USAGE_MAXIMUM (Button 13)
     0x15, 0x00,        //   LOGICAL_MINIMUM (0)
     0x25, 0x01,        //   LOGICAL_MAXIMUM (1)
     0x75, 0x01,        //   REPORT_SIZE (1)
-    0x95, 0x0E,        //   REPORT_COUNT (14)
+    0x95, 0x0D,        //   REPORT_COUNT (13)
     0x81, 0x02,        //   INPUT (Data,Var,Abs)
     
     /* Padding */
     0x75, 0x01,        //   REPORT_SIZE (1)
-    0x95, 0x02,        //   REPORT_COUNT (2)
+    0x95, 0x03,        //   REPORT_COUNT (3)
     0x81, 0x01,        //   INPUT (Const)
     
     0xC0,              // END_COLLECTION (Application)
@@ -77,16 +77,16 @@ const uint8_t HID_JOYSTICK_ReportDesc_Custom[HID_REPORT_DESC_SIZE_CUSTOM] = {
     /* Player 2 Buttons */
     0x05, 0x09,        //   USAGE_PAGE (Button)
     0x19, 0x01,        //   USAGE_MINIMUM (Button 1)
-    0x29, 0x0E,        //   USAGE_MAXIMUM (Button 14)
+    0x29, 0x0D,        //   USAGE_MAXIMUM (Button 13)
     0x15, 0x00,        //   LOGICAL_MINIMUM (0)
     0x25, 0x01,        //   LOGICAL_MAXIMUM (1)
     0x75, 0x01,        //   REPORT_SIZE (1)
-    0x95, 0x0E,        //   REPORT_COUNT (14)
+    0x95, 0x0D,        //   REPORT_COUNT (13)
     0x81, 0x02,        //   INPUT (Data,Var,Abs)
     
     /* Padding */
     0x75, 0x01,        //   REPORT_SIZE (1)
-    0x95, 0x02,        //   REPORT_COUNT (2)
+    0x95, 0x03,        //   REPORT_COUNT (3)
     0x81, 0x01,        //   INPUT (Const)
     
     0xC0               // END_COLLECTION (Application)
