@@ -24,7 +24,7 @@ extern "C" {
 
 /* Configuration */
 #define USE_DIRECT_BUTTONS      /* Comment to enable JVS mode */
-#define MAX_BUTTONS             32  /* Maximum number of arcade buttons */
+#define MAX_BUTTONS             40  /* Maximum number of arcade buttons (34 used: 17 P1 + 17 P2) */
 
 /* HID Keyboard Report Structure (9 bytes: 1 ReportID + 8 data bytes) */
 typedef struct {

@@ -146,17 +146,17 @@ void Joystick_ProcessButtons(void)
                     case 4: joystick_report[player_idx].x = 255; break;  /* Right */
                 }
             } else {
-                /* Button press (0-12 for 13 buttons) */
-                if (mapping->button_num < 13) {
+                /* Button press (0-13 for 14 buttons) */
+                if (mapping->button_num < 14) {
                     joystick_report[player_idx].buttons |= (1 << mapping->button_num);
                 }
             }
         }
     }
     
-    /* Mask buttons to ensure only 13 bits are used (bits 0-12), bits 13-15 must be 0 */
-    joystick_report[0].buttons &= 0x1FFF;  // 0001111111111111 = mask for 13 bits
-    joystick_report[1].buttons &= 0x1FFF;
+    /* Mask buttons to ensure only 14 bits are used (bits 0-13), bits 14-15 must be 0 */
+    joystick_report[0].buttons &= 0x3FFF;  // 0011111111111111 = mask for 14 bits
+    joystick_report[1].buttons &= 0x3FFF;
     
     /* LED blink for activity - Player 1: LED1, Player 2: LED2 */
     HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, player_activity[0] ? GPIO_PIN_SET : GPIO_PIN_RESET);

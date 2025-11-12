@@ -8,15 +8,43 @@ Write-Host "  HIDO Firmware Flash Tool" -ForegroundColor Cyan
 Write-Host "================================" -ForegroundColor Cyan
 Write-Host ""
 
-# STM32CubeProgrammer path
-$STM32_CLI = "C:\Program Files\STMicroelectronics\STM32Cube\STM32CubeProgrammer\bin\STM32_Programmer_CLI.exe"
+# STM32CubeProgrammer path - try multiple common locations
+$POSSIBLE_PATHS = @(
+    "C:\ST\STM32Cube\STM32CubeProgrammer\bin\STM32_Programmer_CLI.exe",
+    "C:\Program Files\STMicroelectronics\STM32Cube\STM32CubeProgrammer\bin\STM32_Programmer_CLI.exe",
+    "C:\Program Files (x86)\STMicroelectronics\STM32Cube\STM32CubeProgrammer\bin\STM32_Programmer_CLI.exe"
+)
+
+$STM32_CLI = $null
+foreach ($path in $POSSIBLE_PATHS) {
+    if (Test-Path $path) {
+        $STM32_CLI = $path
+        Write-Host "Found STM32CubeProgrammer: $path" -ForegroundColor Green
+        break
+    }
+}
+
+# If not found in common locations, try to find it using Get-Command (if in PATH)
+if (-not $STM32_CLI) {
+    $cliInPath = Get-Command "STM32_Programmer_CLI.exe" -ErrorAction SilentlyContinue
+    if ($cliInPath) {
+        $STM32_CLI = $cliInPath.Source
+        Write-Host "Found STM32CubeProgrammer in PATH: $STM32_CLI" -ForegroundColor Green
+    }
+}
 
 # Check if CLI exists
-if (-not (Test-Path $STM32_CLI)) {
+if (-not $STM32_CLI) {
     Write-Host "ERROR: STM32CubeProgrammer CLI not found!" -ForegroundColor Red
-    Write-Host "Expected path: $STM32_CLI" -ForegroundColor Yellow
-    Write-Host "Please install STM32CubeProgrammer from:" -ForegroundColor Yellow
-    Write-Host "https://www.st.com/en/development-tools/stm32cubeprog.html" -ForegroundColor Yellow
+    Write-Host "Searched in:" -ForegroundColor Yellow
+    foreach ($path in $POSSIBLE_PATHS) {
+        Write-Host "  - $path" -ForegroundColor Yellow
+    }
+    Write-Host ""
+    Write-Host "Please either:" -ForegroundColor Yellow
+    Write-Host "  1. Install STM32CubeProgrammer from:" -ForegroundColor White
+    Write-Host "     https://www.st.com/en/development-tools/stm32cubeprog.html" -ForegroundColor White
+    Write-Host "  2. Add STM32_Programmer_CLI.exe to your system PATH" -ForegroundColor White
     exit 1
 }
 

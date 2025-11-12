@@ -69,7 +69,7 @@ void MX_ADC1_Init(void)
   */
   sConfigInjected.InjectedChannel = ADC_CHANNEL_8;
   sConfigInjected.InjectedRank = ADC_INJECTED_RANK_1;
-  sConfigInjected.InjectedNbrOfConversion = 4;
+  sConfigInjected.InjectedNbrOfConversion = 3;  /* Changed from 4 to 3 - removed CHANNEL_9 (PB1) */
   sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_1CYCLE_5;
   sConfigInjected.ExternalTrigInjecConv = ADC_INJECTED_SOFTWARE_START;
   sConfigInjected.AutoInjectedConv = DISABLE;
@@ -80,13 +80,13 @@ void MX_ADC1_Init(void)
     Error_Handler();
   }
 
-  /** Configure Injected Channel
+  /** Configure Injected Channel - CHANNEL_9 (PB1) REMOVED - Used as button input
   */
-  sConfigInjected.InjectedChannel = ADC_CHANNEL_9;
-  if (HAL_ADCEx_InjectedConfigChannel(&hadc1, &sConfigInjected) != HAL_OK)
-  {
-    Error_Handler();
-  }
+  // sConfigInjected.InjectedChannel = ADC_CHANNEL_9;
+  // if (HAL_ADCEx_InjectedConfigChannel(&hadc1, &sConfigInjected) != HAL_OK)
+  // {
+  //   Error_Handler();
+  // }
 
   /** Configure Injected Channel
   */
