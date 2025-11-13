@@ -2,6 +2,8 @@
 
 This document describes the complete pin mapping between the arcade connectors (J6/J7) silkscreen labels and the corresponding keyboard keys.
 
+> 📚 **Back to**: [Main README](README.md) | [Firmware Documentation](firmware/README.md) | [Quick Start](firmware/QUICK_START.md)
+
 ## Connector Pin Numbering
 - **Pin 1**: Common (COM) - Ground reference for all buttons
 - **Pins 2-18**: Button/Direction inputs
