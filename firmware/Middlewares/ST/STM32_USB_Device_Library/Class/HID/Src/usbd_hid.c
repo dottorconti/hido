@@ -100,6 +100,8 @@ static uint8_t  USBD_HID_DeInit(USBD_HandleTypeDef *pdev,
 static uint8_t  USBD_HID_Setup(USBD_HandleTypeDef *pdev,
                                USBD_SetupReqTypedef *req);
 
+static uint8_t  USBD_HID_EP0_RxReady(USBD_HandleTypeDef *pdev);
+
 static uint8_t  *USBD_HID_GetFSCfgDesc(uint16_t *length);
 
 static uint8_t  *USBD_HID_GetHSCfgDesc(uint16_t *length);
@@ -123,7 +125,7 @@ USBD_ClassTypeDef  USBD_HID =
   USBD_HID_DeInit,
   USBD_HID_Setup,
   NULL, /*EP0_TxSent*/
-  NULL, /*EP0_RxReady*/
+  USBD_HID_EP0_RxReady, /*EP0_RxReady*/
   USBD_HID_DataIn, /*DataIn*/
   NULL, /*DataOut*/
   NULL, /*SOF */
@@ -745,6 +747,18 @@ static uint8_t  *USBD_HID_GetDeviceQualifierDesc(uint16_t *length)
 {
   *length = sizeof(USBD_HID_DeviceQualifierDesc);
   return USBD_HID_DeviceQualifierDesc;
+}
+
+/**
+  * @brief  USBD_HID_EP0_RxReady
+  *         Handle control endpoint data OUT stage
+  * @param  pdev: device instance
+  * @retval status
+  */
+static uint8_t  USBD_HID_EP0_RxReady(USBD_HandleTypeDef *pdev)
+{
+  /* Handle vendor command data reception (e.g., config write) */
+  return USB_ProcessVendorData(pdev);
 }
 
 /**

@@ -30,6 +30,7 @@
 #include "usbd_core.h"
 #include "usbd_desc.h"
 #include "usbd_hid.h"
+#include "flash_config.h"
 
 /* Mode-specific includes */
 #ifdef USE_KEYBOARD_MODE
@@ -108,12 +109,28 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  
+  /* USER CODE BEGIN 2 */
+  
+  /* Ensure DFU pin (PD2) is LOW on startup to prevent accidental bootloader entry */
+  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_RESET);
+  
+  /* USER CODE END 2 */
+  
   MX_USB_DEVICE_Init();
   // MX_ADC1_Init();  /* Disabled - ADC pins used as digital inputs for buttons */
   MX_TIM2_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+  
+  /* Load configuration from FLASH */
+  if (FlashConfig_Load() != HAL_OK)
+  {
+    /* No valid config found, load defaults and save to FLASH */
+    FlashConfig_LoadDefaults();
+    FlashConfig_Save();
+  }
   
 #ifdef USE_KEYBOARD_MODE
   /* Initialize arcade keyboard system (NKRO USB HID mode) */

@@ -62,6 +62,7 @@ $C_SOURCES = @(
     "Core/Src/gpio_test.c",
     "Core/Src/dfu_bootloader.c",
     "Core/Src/usb_commands.c",
+    "Core/Src/flash_config.c",
     "USB_DEVICE/App/usb_device.c",
     "USB_DEVICE/App/usbd_desc.c",
     "USB_DEVICE/Target/usbd_conf.c",
