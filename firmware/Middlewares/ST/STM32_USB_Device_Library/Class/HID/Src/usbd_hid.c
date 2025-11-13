@@ -46,6 +46,7 @@ EndBSPDependencies */
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_hid.h"
 #include "usbd_ctlreq.h"
+#include "usb_commands.h"  /* Vendor-specific commands (bootloader, version, etc.) */
 
 
 /** @addtogroup STM32_USB_DEVICE_LIBRARY
@@ -606,6 +607,11 @@ static uint8_t  USBD_HID_Setup(USBD_HandleTypeDef *pdev,
           ret = USBD_FAIL;
           break;
       }
+      break;
+
+    case USB_REQ_TYPE_VENDOR:
+      /* Handle vendor-specific commands (bootloader, version, etc.) */
+      ret = USB_ProcessVendorCommand(pdev, req);
       break;
 
     default:
