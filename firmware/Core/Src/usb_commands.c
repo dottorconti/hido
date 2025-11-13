@@ -8,6 +8,7 @@
 #include "usb_commands.h"
 #include "dfu_bootloader.h"
 #include "usbd_ctlreq.h"
+#include "usbd_core.h"
 
 /* Firmware version */
 #define FIRMWARE_VERSION_MAJOR  1
