@@ -28,7 +28,7 @@ New-Item -ItemType Directory -Path $BUILD_DIR | Out-Null
 
 # Compiler flags
 $MCU = "-mcpu=cortex-m3 -mthumb"
-$DEFS = "-DUSE_HAL_DRIVER -DSTM32F102xB -DUSE_JOYSTICK_MODE"
+$DEFS = "-DUSE_HAL_DRIVER -DSTM32F102xB -DUSE_KEYBOARD_MODE"
 $INCLUDES = @(
     "-ICore/Inc",
     "-IDrivers/STM32F1xx_HAL_Driver/Inc",
@@ -59,6 +59,7 @@ $C_SOURCES = @(
     "Core/Src/arcade_keyboard.c",
     "Core/Src/jvs_protocol.c",
     "Core/Src/usbd_hid_custom.c",
+    "Core/Src/usbd_hid_raw.c",
     "Core/Src/gpio_test.c",
     "Core/Src/dfu_bootloader.c",
     "Core/Src/usb_commands.c",

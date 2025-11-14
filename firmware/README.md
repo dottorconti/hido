@@ -94,9 +94,10 @@ Emulates **2 independent USB joysticks** (appears as 2 separate devices in Windo
 ### Mode 3: JVS Protocol (RS485 Arcade I/O)
 
 **RS485 Interface (SN65HVD1786D):**
-- PA8 (TX): RS485 Data Transmit
-- PA9 (RX): RS485 Data Receive
-- PA10: Sense Line (2.5V when ready)
+- PA9 (TX): RS485 Data Transmit
+- PA10 (RX): RS485 Data Receive
+- PA8: Driver Enable (DE/RE control)
+- PA2: Sense Line (3.3V when ready)
 
 **Protocol:** JVS 3.0 compatible
 - Baud Rate: 115200 8N1

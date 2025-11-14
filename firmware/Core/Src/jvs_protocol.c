@@ -6,7 +6,8 @@
   * @attention
   *
   * JVS over RS485 with SN65HVD1786D transceiver
-  * USART1: PA9 (TX), PA8 (RX), PA10 (Sense Line)
+  * USART1: PA9 (TX), PA10 (RX), PA8 (DE/RE Enable)
+  * JVS Sense Line: PA2 (GPIO Output)
   *
   * This implementation is based on the JVS protocol specification and
   * inspired by the OpenJVS project by Bobby Dilley:

@@ -8,10 +8,17 @@ Questa cartella contiene tutti gli strumenti necessari per l'aggiornamento firmw
 - **`dfu-util.exe`** - Tool per flash firmware via USB DFU (v0.11 static)
 - **`dfu_update.py`** - Script Python per aggiornamento automatico firmware
 - **`dfu_update.bat`** - Script Windows per aggiornamento manuale firmware
+- **`flash_dfu.py`** - Script interattivo per flash manuale con BOOT0
 
 ### Configurazione
-- **`config_tool.py`** - Tool Python per gestione configurazione pin mapping
+- **`config_tool.py`** - Tool CLI per gestione configurazione pin mapping
+- **`config_tool_gui.py`** - **[NUOVO]** Tool GUI completo per configurazione
+- **`run_config_gui.bat`** - **[NUOVO]** Launcher rapido per GUI
+- **`CONFIG_TOOLS_README.md`** - **[NUOVO]** Documentazione dettagliata config tools
 - **`libusb-1.0.dll`** - Libreria USB necessaria per pyusb su Windows
+
+### Driver
+- **`zadig.exe`** - Tool per installare driver WinUSB/libusb su Windows
 
 ## Utilizzo
 
@@ -41,12 +48,40 @@ Lo script:
 
 ### 2. Configurazione Pin Mapping
 
+#### Metodo Rapido - GUI (RACCOMANDATO)
+```bash
+# Doppio click su:
+.\run_config_gui.bat
+
+# Oppure manualmente:
+python config_tool_gui.py
+```
+
+**Funzionalità GUI:**
+- ✅ Connessione automatica al dispositivo
+- ✅ Lettura/Scrittura configurazione
+- ✅ Modifica pin-by-pin con dropdown
+- ✅ Reset ai default
+- ✅ Export/Import JSON
+- ✅ Info dispositivo e firmware
+- ✅ Supporto Keyboard e Joystick mode
+
+#### Metodo CLI - Line di Comando
+```bash
+python config_tool.py
+```
+
+**Funzionalità CLI:**
+- Lettura e visualizzazione configurazione
+- Export/Import JSON
+- Reset ai default
+
 #### Prerequisiti Windows
 1. **Installa WinUSB driver** con Zadig:
-   - Scarica Zadig: https://zadig.akeo.ie/
+   - Esegui `zadig.exe` (incluso in questa cartella)
    - Options → "List All Devices"
-   - Seleziona "HIDO Arcade Keyboard"
-   - Driver → "WinUSB"
+   - Seleziona "HIDO" (VID 0483, PID 572B)
+   - Driver → "WinUSB" o "libusb-win32"
    - Install/Replace Driver
 
 2. **Installa pyusb**:
@@ -54,23 +89,15 @@ Lo script:
    pip install pyusb
    ```
 
-3. **Assicurati che `libusb-1.0.dll` sia in questa cartella**
-
-#### Utilizzo Config Tool
-```bash
-python config_tool.py
-```
-
-Il tool permette di:
-- **Leggere** la configurazione attuale dal dispositivo
-- **Visualizzare** la mappatura pin per Player 1 e Player 2
-- **Resettare** ai valori di default
-- **Esportare** la configurazione in JSON
-
 #### Comandi USB Supportati
-- `0xC0` - Leggi configurazione (512 byte)
+- `0xC0` - Leggi configurazione (max 1024 byte)
 - `0xC1` - Scrivi configurazione (salva in FLASH)
 - `0xC2` - Reset configurazione ai default
+- `0xAA` - Ottieni versione firmware
+- `0xCC` - Soft reset dispositivo
+- `0xBB` - Entra in DFU bootloader (magic 0xB007)
+
+📖 **Vedi `CONFIG_TOOLS_README.md` per documentazione completa**
 
 ### 3. Configurazione Predefinita
 

@@ -236,6 +236,23 @@ def print_joystick_config(config):
     print(f"\nCRC32: 0x{config['crc32']:08X}")
     print("="*70)
 
+def write_config(dev, config_data):
+    """Write configuration to device"""
+    try:
+        # Send control transfer to write config
+        result = dev.ctrl_transfer(
+            bmRequestType=0x40,  # Host-to-Device, Vendor, Device
+            bRequest=CMD_CONFIG_WRITE,
+            wValue=0,
+            wIndex=0,
+            data_or_wLength=config_data
+        )
+        print(f"✓ Wrote {len(config_data)} bytes to device")
+        return True
+    except usb.core.USBError as e:
+        print(f"ERROR writing config: {e}")
+        return False
+
 def reset_config(dev):
     """Reset configuration to defaults"""
     try:
@@ -296,6 +313,7 @@ def main():
         print("\nOptions:")
         print("  [R] Reset to defaults")
         print("  [E] Export to JSON")
+        print("  [I] Import from JSON")
         print("  [Q] Quit")
         
         choice = input("\nSelect option: ").strip().upper()
@@ -318,6 +336,24 @@ def main():
             with open(filename, 'w') as f:
                 json.dump(config, f, indent=2)
             print(f"✓ Configuration exported to {filename}")
+        
+        elif choice == 'I':
+            filename = input("Enter filename (default: hido_config.json): ").strip()
+            if not filename:
+                filename = "hido_config.json"
+            
+            try:
+                with open(filename, 'r') as f:
+                    imported_config = json.load(f)
+                
+                # Validate and write
+                # Note: This is simplified - real implementation should rebuild binary format
+                print("WARNING: Import/Write not fully implemented yet")
+                print("Use GUI tool for full write functionality")
+            except FileNotFoundError:
+                print(f"ERROR: File {filename} not found")
+            except json.JSONDecodeError as e:
+                print(f"ERROR: Invalid JSON file: {e}")
         
         elif choice == 'Q':
             break

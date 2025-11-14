@@ -9,6 +9,27 @@
   *
   * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
   * All rights reserved.</center></h2>
+
+ 
+  * This software component is licensed by ST under Ultimate Liberty license
+  * SLA0044, the "License"; You may not use this file except in compliance with
+  * the License. You may obtain a copy of the License at:
+  *                             www.st.com/SLA0044
+  *
+  ******************************************************************************
+  */
+/* USER CODE END Header */
+/* USER CODE BEGIN Header */
+/**
+  ******************************************************************************
+  * @file           : App/usbd_desc.c
+  * @version        : v2.0_Cube
+  * @brief          : This file implements the USB device descriptors.
+  ******************************************************************************
+  * @attention
+  *
+  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
+  * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under Ultimate Liberty license
   * SLA0044, the "License"; You may not use this file except in compliance with
@@ -32,9 +53,10 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 
+
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
+__ALIGN_BEGIN uint8_t USBD_StringSerial[USB_SIZ_STRING_SERIAL] __ALIGN_END = {0};
 /* USER CODE END PV */
 
 /** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
@@ -80,6 +102,51 @@
 
 #define USBD_CONFIGURATION_STRING_FS     "HID Config"
 #define USBD_INTERFACE_STRING_FS     "HID Interface"
+#define USBD_INTERFACE2_STRING_FS    "HIDO Config"
+
+
+// Endpoint e dimensioni per interfaccia RAW (seconda interfaccia)
+#define HID_RAW_EPIN_ADDR             0x82
+#define HID_RAW_EPOUT_ADDR            0x02
+#define HID_RAW_EPIN_SIZE             0x40
+#define HID_RAW_EPOUT_SIZE            0x40
+#define HID_RAW_REPORT_DESC_SIZE      0x41 // 65 byte, vedi usbd_hid_raw.h
+
+// Assicurati che le macro per la prima interfaccia (custom) esistano
+#ifndef HID_CUSTOM_REPORT_DESC_SIZE
+#define HID_CUSTOM_REPORT_DESC_SIZE   0x3F
+#endif
+#ifndef HID_EPOUT_ADDR
+#define HID_EPOUT_ADDR                0x01
+#endif
+#ifndef HID_EPOUT_SIZE
+#define HID_EPOUT_SIZE                0x40
+#endif
+
+
+// Le define per la prima interfaccia (custom) sono già presenti in usbd_hid.h
+// Non ridefinire qui per evitare conflitti
+// Include per tipi standard
+#include <stdint.h>
+
+// Endpoint e dimensioni per interfaccia RAW (seconda interfaccia)
+#define HID_RAW_EPIN_ADDR             0x82
+#define HID_RAW_EPOUT_ADDR            0x02
+#define HID_RAW_EPIN_SIZE             0x40
+#define HID_RAW_EPOUT_SIZE            0x40
+#define HID_RAW_REPORT_DESC_SIZE      0x41 // 65 byte, vedi usbd_hid_raw.h
+
+// Buffer per le stringhe USB
+// Endpoint e dimensioni per interfaccia custom (prima interfaccia)
+// #define HID_EPIN_ADDR                 0x81
+// #define HID_EPOUT_ADDR                0x01
+// #define HID_EPIN_SIZE                 0x40
+// #define HID_EPOUT_SIZE                0x40
+// #define HID_CUSTOM_REPORT_DESC_SIZE   0x3F
+
+// Buffer per le stringhe USB
+#define USB_MAX_STR_DESC_SIZ 64
+__ALIGN_BEGIN uint8_t USBD_StrDesc[USB_MAX_STR_DESC_SIZ] __ALIGN_END = {0};
 
 /* USER CODE BEGIN PRIVATE_DEFINES */
 
@@ -205,69 +272,101 @@ __ALIGN_BEGIN uint8_t USBD_LangIDDesc[USB_LEN_LANGID_STR_DESC] __ALIGN_END =
   #pragma data_alignment=4
 #endif /* defined ( __ICCARM__ ) */
 /* Internal string descriptor. */
-__ALIGN_BEGIN uint8_t USBD_StrDesc[USBD_MAX_STR_DESC_SIZ] __ALIGN_END;
+// Nuovo descrittore di configurazione con 2 interfacce HID (standard + RAW)
+__ALIGN_BEGIN uint8_t USBD_FS_CfgDesc[]  __ALIGN_END =
+{
+  /* Configuration Descriptor */
+  0x09,   /* bLength: Configuration Descriptor size */
+  USB_DESC_TYPE_CONFIGURATION,      /* bDescriptorType: Configuration */
+  0x49, 0x00, /* wTotalLength: 73 bytes (9 + 2*(9+9+7+7)) */
+  0x02,   /* bNumInterfaces: 2 interfaces */
+  0x01,   /* bConfigurationValue: Configuration value */
+  0x00,   /* iConfiguration: Index of string descriptor describing the configuration */
+  0xE0,   /* bmAttributes: bus powered, remote wakeup */
+  0x32,   /* MaxPower 100 mA: this current is used for detecting Vbus */
 
-#if defined ( __ICCARM__ ) /*!< IAR Compiler */
-  #pragma data_alignment=4
-#endif
-__ALIGN_BEGIN uint8_t USBD_StringSerial[USB_SIZ_STRING_SERIAL] __ALIGN_END = {
-  USB_SIZ_STRING_SERIAL,
-  USB_DESC_TYPE_STRING,
+  /*---------------------------------------------------------------------------*/
+  /* Interface 0: HID standard (joystick/keyboard) */
+  0x09,   /* bLength: Interface Descriptor size */
+  USB_DESC_TYPE_INTERFACE,  /* bDescriptorType: Interface descriptor type */
+  0x00,   /* bInterfaceNumber: 0 */
+  0x00,   /* bAlternateSetting: Alternate setting */
+  0x02,   /* bNumEndpoints */
+  0x03,   /* bInterfaceClass: HID */
+  0x00,   /* bInterfaceSubClass : 1=BOOT, 0=no boot */
+  0x00,   /* nInterfaceProtocol : 0=none, 1=keyboard, 2=mouse */
+  0x00,   /* iInterface: */
+
+  /* HID Descriptor (standard) */
+  0x09,   /* bLength: HID Descriptor size */
+  HID_DESCRIPTOR_TYPE, /* bDescriptorType: HID */
+  0x11,   /* bcdHID: HID Class Spec release number */
+  0x01,
+  0x00,   /* bCountryCode: Hardware target country */
+  0x01,   /* bNumDescriptors: Number of HID class descriptors to follow */
+  0x22,   /* bDescriptorType */
+  HID_CUSTOM_REPORT_DESC_SIZE,/* wItemLength: Total length of Report descriptor */
+  0x00,
+
+  /* Endpoint Descriptor IN (standard) */
+  0x07,   /* bLength: Endpoint Descriptor size */
+  USB_DESC_TYPE_ENDPOINT, /* bDescriptorType: */
+  HID_EPIN_ADDR,     /* bEndpointAddress: Endpoint Address (IN) */
+  0x03,   /* bmAttributes: Interrupt endpoint */
+  HID_EPIN_SIZE,     /* wMaxPacketSize: */
+  0x00,
+  HID_FS_BINTERVAL,          /* bInterval: */
+
+  /* Endpoint Descriptor OUT (standard) */
+  0x07,   /* bLength: Endpoint Descriptor size */
+  USB_DESC_TYPE_ENDPOINT, /* bDescriptorType: */
+  HID_EPOUT_ADDR,    /* bEndpointAddress: Endpoint Address (OUT) */
+  0x03,   /* bmAttributes: Interrupt endpoint */
+  HID_EPOUT_SIZE,    /* wMaxPacketSize: */
+  0x00,
+  HID_FS_BINTERVAL,          /* bInterval: */
+
+  /*---------------------------------------------------------------------------*/
+  /* Interface 1: HID RAW (config) */
+  0x09,   /* bLength: Interface Descriptor size */
+  USB_DESC_TYPE_INTERFACE,  /* bDescriptorType: Interface descriptor type */
+  0x01,   /* bInterfaceNumber: 1 */
+  0x00,   /* bAlternateSetting: Alternate setting */
+  0x02,   /* bNumEndpoints */
+  0x03,   /* bInterfaceClass: HID */
+  0x00,   /* bInterfaceSubClass : 0 */
+  0x00,   /* nInterfaceProtocol : 0 */
+  0x00,   /* iInterface: no string */
+
+  /* HID Descriptor (RAW) */
+  0x09,   /* bLength: HID Descriptor size */
+  HID_DESCRIPTOR_TYPE, /* bDescriptorType: HID */
+  0x11,   /* bcdHID: HID Class Spec release number */
+  0x01,
+  0x00,   /* bCountryCode: Hardware target country */
+  0x01,   /* bNumDescriptors: Number of HID class descriptors to follow */
+  0x22,   /* bDescriptorType */
+  HID_RAW_REPORT_DESC_SIZE,/* wItemLength: Total length of Report descriptor (RAW) */
+  0x00,
+
+  /* Endpoint Descriptor IN (RAW) */
+  0x07,   /* bLength: Endpoint Descriptor size */
+  USB_DESC_TYPE_ENDPOINT, /* bDescriptorType: */
+  HID_RAW_EPIN_ADDR,     /* bEndpointAddress: Endpoint Address (IN) */
+  0x03,   /* bmAttributes: Interrupt endpoint */
+  HID_RAW_EPIN_SIZE,     /* wMaxPacketSize: */
+  0x00,
+  HID_FS_BINTERVAL,          /* bInterval: */
+
+  /* Endpoint Descriptor OUT (RAW) */
+  0x07,   /* bLength: Endpoint Descriptor size */
+  USB_DESC_TYPE_ENDPOINT, /* bDescriptorType: */
+  HID_RAW_EPOUT_ADDR,    /* bEndpointAddress: Endpoint Address (OUT) */
+  0x03,   /* bmAttributes: Interrupt endpoint */
+  HID_RAW_EPOUT_SIZE,    /* wMaxPacketSize: */
+  0x00,
+  HID_FS_BINTERVAL,          /* bInterval: */
 };
-
-/**
-  * @}
-  */
-
-/** @defgroup USBD_DESC_Private_Functions USBD_DESC_Private_Functions
-  * @brief Private functions.
-  * @{
-  */
-
-/**
-  * @brief  Return the device descriptor
-  * @param  speed : Current device speed
-  * @param  length : Pointer to data length variable
-  * @retval Pointer to descriptor buffer
-  */
-uint8_t * USBD_FS_DeviceDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
-{
-  UNUSED(speed);
-  *length = sizeof(USBD_FS_DeviceDesc);
-  return USBD_FS_DeviceDesc;
-}
-
-/**
-  * @brief  Return the LangID string descriptor
-  * @param  speed : Current device speed
-  * @param  length : Pointer to data length variable
-  * @retval Pointer to descriptor buffer
-  */
-uint8_t * USBD_FS_LangIDStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
-{
-  UNUSED(speed);
-  *length = sizeof(USBD_LangIDDesc);
-  return USBD_LangIDDesc;
-}
-
-/**
-  * @brief  Return the product string descriptor
-  * @param  speed : Current device speed
-  * @param  length : Pointer to data length variable
-  * @retval Pointer to descriptor buffer
-  */
-uint8_t * USBD_FS_ProductStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
-{
-  if(speed == 0)
-  {
-    USBD_GetString((uint8_t *)USBD_PRODUCT_STRING_FS, USBD_StrDesc, length);
-  }
-  else
-  {
-    USBD_GetString((uint8_t *)USBD_PRODUCT_STRING_FS, USBD_StrDesc, length);
-  }
-  return USBD_StrDesc;
-}
 
 /**
   * @brief  Return the manufacturer string descriptor
@@ -327,16 +426,19 @@ uint8_t * USBD_FS_ConfigStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
   * @param  length : Pointer to data length variable
   * @retval Pointer to descriptor buffer
   */
+
+// Return interface string descriptor (index 0 = main, 1 = config)
 uint8_t * USBD_FS_InterfaceStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
-  if(speed == 0)
-  {
-    USBD_GetString((uint8_t *)USBD_INTERFACE_STRING_FS, USBD_StrDesc, length);
-  }
-  else
-  {
-    USBD_GetString((uint8_t *)USBD_INTERFACE_STRING_FS, USBD_StrDesc, length);
-  }
+  // Default: interface 0
+  USBD_GetString((uint8_t *)USBD_INTERFACE_STRING_FS, USBD_StrDesc, length);
+  return USBD_StrDesc;
+}
+
+// New: interface 1 (HIDO Config)
+uint8_t * USBD_FS_Interface2StrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
+{
+  USBD_GetString((uint8_t *)USBD_INTERFACE2_STRING_FS, USBD_StrDesc, length);
   return USBD_StrDesc;
 }
 
@@ -390,6 +492,28 @@ static void IntToUnicode(uint32_t value, uint8_t * pbuf, uint8_t len)
 
     pbuf[2 * idx + 1] = 0;
   }
+}
+
+/* Implementazioni richieste dal linker */
+uint8_t * USBD_FS_DeviceDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
+{
+  UNUSED(speed);
+  *length = sizeof(USBD_FS_DeviceDesc);
+  return (uint8_t*)USBD_FS_DeviceDesc;
+}
+
+uint8_t * USBD_FS_LangIDStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
+{
+  UNUSED(speed);
+  *length = sizeof(USBD_LangIDDesc);
+  return (uint8_t*)USBD_LangIDDesc;
+}
+
+uint8_t * USBD_FS_ProductStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
+{
+  UNUSED(speed);
+  USBD_GetString((uint8_t *)USBD_PRODUCT_STRING_FS, USBD_StrDesc, length);
+  return USBD_StrDesc;
 }
 /**
   * @}

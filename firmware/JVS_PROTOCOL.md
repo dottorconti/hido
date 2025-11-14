@@ -8,11 +8,12 @@ This document describes the JVS (JAMMA Video Standard) implementation for the HI
 ## Hardware Setup
 
 ### RS485 Transceiver: SN65HVD1786D
-- **TX (PA8)**: USART1 Transmit → RS485 D pin
-- **RX (PA9)**: USART1 Receive → RS485 /D pin
-- **Sense Line (PA10)**: GPIO output for connection detection
+- **TX (PA9)**: USART1 Transmit → RS485 DI pin
+- **RX (PA10)**: USART1 Receive → RS485 RO pin
+- **DE/RE (PA8)**: Driver Enable (controls TX/RX direction)
+- **Sense Line (PA2)**: GPIO output for connection detection
   - Floating: Device waiting for connection
-  - 2.5V: Device ready and addressed
+  - HIGH (3.3V): Device ready and addressed
 
 ### Wiring to Arcade Board
 1. Connect RS485 D to arcade board JVS Data+
@@ -53,7 +54,7 @@ Special bytes in data are escaped:
 #### 0xF1 - Assign Address
 - **Request**: `[0xF1] [ADDRESS]`
 - **Response**: `[0x01] [0x01]` (Success)
-- **Action**: Device takes the assigned address, sense line goes active (2.5V)
+- **Action**: Device takes the assigned address, sense line goes active (HIGH ~3.3V)
 
 #### 0x10 - Request ID String
 - **Request**: `[0x10]`
@@ -157,7 +158,7 @@ Each coin counter is 14-bit value (0-16383):
 // Floating (waiting for connection)
 JVS_SetSenseLine(false);
 
-// Active 2.5V (ready and addressed)
+// Active HIGH ~3.3V (ready and addressed)
 JVS_SetSenseLine(true);
 ```
 
@@ -166,7 +167,7 @@ JVS_SetSenseLine(true);
 2. Sense line set to floating
 3. Wait for Reset command (0xF0)
 4. Wait for Address Assignment (0xF1)
-5. Set sense line active (2.5V)
+5. Set sense line active (HIGH ~3.3V)
 6. Begin normal operation
 
 ### Button Mapping Example
@@ -212,8 +213,8 @@ while (1) {
 ## Troubleshooting
 
 ### Device Not Detected
-- Check RS485 wiring polarity (swap D and /D if needed)
-- Verify sense line voltage (should be 2.5V when ready)
+- Check RS485 wiring polarity (swap A and B if needed)
+- Verify sense line voltage (should be ~3.3V when ready)
 - Confirm baud rate is 115200 on both sides
 
 ### Communication Errors

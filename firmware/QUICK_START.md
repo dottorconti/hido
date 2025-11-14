@@ -86,8 +86,8 @@ make -j4
 1. Compile with `USE_JVS_MODE` defined
 2. Flash firmware
 3. Connect RS485 to arcade board
-4. Sense line (PA10) should be floating initially
-5. After address assignment, PA10 goes to 2.5V
+4. Sense line (PA2) should be floating initially
+5. After address assignment, PA2 goes HIGH (3.3V)
 6. Test with TeknoParrot or JVS test utility
 
 ## Hardware Connections
@@ -99,10 +99,11 @@ make -j4
 - **USB**: Connect to PC
 
 ### JVS Mode
-- **RS485 TX**: PA8 → SN65HVD1786D D pin
-- **RS485 RX**: PA9 → SN65HVD1786D /D pin
-- **Sense Line**: PA10 → Arcade board sense input
-- **RS485 D/D̄**: Connect to arcade board JVS connector
+- **RS485 TX**: PA9 → SN65HVD1786D DI pin
+- **RS485 RX**: PA10 → SN65HVD1786D RO pin
+- **RS485 Enable**: PA8 → SN65HVD1786D DE/RE pins
+- **Sense Line**: PA2 → Arcade board sense input (via JVS connector)
+- **RS485 A/B**: Connect to arcade board JVS connector
 - **GND**: Common ground with arcade board
 
 ## LED Indicators
@@ -123,8 +124,8 @@ make -j4
 4. Look for "STM32 Human Interface Device"
 
 ### No Response (JVS Mode)
-1. Check RS485 wiring (swap D and /D if needed)
-2. Verify sense line voltage (should be 2.5V when ready)
+1. Check RS485 wiring (swap A and B if needed)
+2. Verify sense line voltage (should be ~3.3V when ready)
 3. Confirm baud rate: 115200 8N1
 4. Test with loopback (short TX to RX)
 

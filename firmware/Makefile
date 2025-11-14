@@ -119,7 +119,8 @@ AS_DEFS =
 # C defines
 C_DEFS =  \
 -DUSE_HAL_DRIVER \
--DSTM32F102xB
+-DSTM32F102xB \
+-DUSE_KEYBOARD_MODE
 
 
 # AS includes

@@ -72,10 +72,17 @@ void MX_USB_DEVICE_Init(void)
   {
     Error_Handler();
   }
+  // Registra la prima interfaccia HID (tastiera/joystick)
   if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_HID) != USBD_OK)
   {
     Error_Handler();
   }
+  // Registra la seconda interfaccia HID RAW
+  // NOTE: la registrazione di una seconda classe sovrascrive pdev->pClass
+  // nello stack ST, causando l'inattivazione della prima classe (tastiera).
+  // Per ripristinare rapidamente la tastiera, non registriamo qui la classe RAW.
+  // La gestione di due interfacce HID richiede un driver composito o un'unica
+  // classe HID che espone entrambe le interfacce.
   if (USBD_Start(&hUsbDeviceFS) != USBD_OK)
   {
     Error_Handler();

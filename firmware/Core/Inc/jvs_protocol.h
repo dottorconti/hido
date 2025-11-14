@@ -83,9 +83,9 @@ extern "C" {
 #define JVS_BUTTONS_PER_PLAYER  8       // 8 buttons per player (+ start + service)
 #define JVS_NUM_COINS           2       // 2 coin slots
 
-/* JVS Sense Line Control (PA10) */
+/* JVS Sense Line Control (PA2) */
 #define JVS_SENSE_PORT          GPIOA
-#define JVS_SENSE_PIN           GPIO_PIN_10
+#define JVS_SENSE_PIN           GPIO_PIN_2
 
 /* JVS Packet Structure */
 typedef struct {
