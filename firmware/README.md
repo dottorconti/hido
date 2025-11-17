@@ -196,6 +196,18 @@ Edit `Core/Inc/arcade_joystick.h` (Joystick Mode) or `Core/Inc/arcade_keyboard.h
 2. Verify GPIO mapping in `arcade_keyboard.c`
 3. Test with LED indicators in DEBUG mode
 
+### Joystick Mode Notes
+- Removed `HAL_Delay(1)` between joystick reports to avoid USB timing issues that could freeze the host.
+- Restored natural mapping: Report ID 1 -> physical Player 1, Report ID 2 -> physical Player 2.
+- Firmware now sends each HID joystick report only when its contents change (reduces USB traffic and host-side confusion).
+- If Player 2 feels slow, try reducing `DEBOUNCE_TIME_MS` in `Core/Inc/arcade_joystick.h` (2-3 ms is a common compromise).
+- To rebuild and flash joystick firmware from the `firmware` folder:
+
+```powershell
+.\compile_direct.ps1 -Mode joystick
+.\flash.ps1
+```
+
 ### Ghosting issues
 - Should not occur with NKRO! Check USB host supports it
 - Some BIOS/legacy systems might not support NKRO
