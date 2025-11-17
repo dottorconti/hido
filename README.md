@@ -58,7 +58,14 @@ Each connector has **silkscreen labels** (0-9, A-F, 10) for easy identification:
 Standard USB keyboard with 6-key rollover for arcade gaming.
 
 ### Joystick Mode
-Dual USB joystick with 14 buttons + 2 axes each.
+Dual USB joystick with 13 logical buttons + 2 axes each (per player).
+
+Note (recent fixes):
+- Firmware expects 13 logical buttons per player (bits 0..12).
+- Natural mapping restored: Report ID 1 -> Player 1, Report ID 2 -> Player 2.
+- Removed blocking `HAL_Delay(1)` between HID reports to avoid USB freezes.
+- Firmware now only sends HID reports when the report contents change (reduces USB traffic).
+- If Player 2 feels slow, try reducing `DEBOUNCE_TIME_MS` in `Core/Inc/arcade_joystick.h` to 2-3 ms.
 
 ### JVS Mode
 RS485 arcade I/O board protocol for JAMMA/JVS cabinets.
