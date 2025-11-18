@@ -218,6 +218,9 @@ USBD_DescriptorsTypeDef FS_Desc =
 , USBD_FS_InterfaceStrDescriptor
 };
 
+/* Export the size of the FS configuration descriptor so other TUs can use it */
+/* (defined after the descriptor array) */
+
 #if defined ( __ICCARM__ ) /* IAR Compiler */
   #pragma data_alignment=4
 #endif /* defined ( __ICCARM__ ) */
@@ -368,6 +371,9 @@ __ALIGN_BEGIN uint8_t USBD_FS_CfgDesc[]  __ALIGN_END =
   HID_FS_BINTERVAL,          /* bInterval: */
 };
 
+/* Export the size of the FS configuration descriptor so other TUs can use it */
+uint16_t USBD_FS_CfgDescSize = sizeof(USBD_FS_CfgDesc);
+
 /**
   * @brief  Return the manufacturer string descriptor
   * @param  speed : Current device speed
@@ -390,7 +396,12 @@ uint8_t * USBD_FS_ManufacturerStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *l
 uint8_t * USBD_FS_SerialStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
   UNUSED(speed);
+  /* Prepare the standard USB string-descriptor header (length + descriptor type)
+     then fill the Unicode characters starting at index 2. This ensures the
+     host receives a valid string descriptor even if the unique ID reads as 0. */
   *length = USB_SIZ_STRING_SERIAL;
+  USBD_StringSerial[0] = USB_SIZ_STRING_SERIAL;
+  USBD_StringSerial[1] = USB_DESC_TYPE_STRING;
 
   /* Update the serial number string descriptor with the data from the unique
    * ID */

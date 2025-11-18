@@ -25,6 +25,8 @@
 #include "usbd_core.h"
 #include "usbd_desc.h"
 #include "usbd_hid.h"
+/* Forward declare composite class (header may not be present in this build environment) */
+extern USBD_ClassTypeDef USBD_COMPOSITE;
 
 /* USER CODE BEGIN Includes */
 
@@ -72,8 +74,8 @@ void MX_USB_DEVICE_Init(void)
   {
     Error_Handler();
   }
-  // Registra la prima interfaccia HID (tastiera/joystick)
-  if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_HID) != USBD_OK)
+  // Registra la classe composita (HID + CDC)
+  if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_COMPOSITE) != USBD_OK)
   {
     Error_Handler();
   }
