@@ -15,6 +15,7 @@ Open source arcade controller with STM32F102RB microcontroller.
 ### Quick Links
 - **[📋 PINOUT.md](doc/PINOUT.md)** - Complete pin mapping and silkscreen reference
 - **[🔧 Firmware Documentation](doc/README.md)** - Detailed firmware guide
+- **[🔨 Build & Compilation](doc/COMPILATION.md)** - How to build the firmware (scripts and legacy method)
 - **[⚡ Quick Start Guide](doc/QUICK_START.md)** - Get started quickly
 - **[🔄 Mode Comparison](doc/MODE_COMPARISON.md)** - Keyboard vs Joystick vs JVS
 - **[⚙️ Hardware Configuration](doc/HARDWARE_CONFIG.md)** - Hardware setup
@@ -76,16 +77,49 @@ RS485 arcade I/O board protocol for JAMMA/JVS cabinets.
 
 ```
 hido/
-├── README.md              # This file
-├── PINOUT.md             # Complete pinout reference
-├── firmware/             # STM32 firmware source
-│   ├── README.md         # Firmware documentation
-│   ├── QUICK_START.md    # Quick start guide
-│   ├── Core/             # Application code
-│   ├── Drivers/          # STM32 HAL drivers
-│   └── Middlewares/      # USB device library
-├── hardware/             # KiCad PCB design files
-└── fabrication/          # Gerber files for manufacturing
+├── README.md
+├── doc/                   # Documentation
+│   ├── CHANGELOG.md
+│   ├── CORREZIONI_RS485_5V.md
+│   ├── CREDITS.md
+│   ├── DFU_UPDATE.md
+│   ├── HARDWARE_CONFIG.md
+│   ├── JVS_PROTOCOL.md
+│   ├── MODE_COMPARISON.md
+│   ├── PINOUT.md
+│   ├── QUICK_START.md
+│   └── README.md
+├── fabrication/           # Gerber / manufacturing files
+├── firmware/              # STM32 firmware source and tools
+│   ├── build.ps1
+│   ├── check_dfu_util.bat
+│   ├── compile_direct.ps1
+│   ├── config_tool.py
+│   ├── dfu_update.bat
+│   ├── dfu_update.py
+│   ├── download_dfu_util.bat
+│   ├── flash.ps1
+│   ├── hido.ioc
+│   ├── LICENSE
+│   ├── Makefile
+│   ├── STM32F102RBTX_FLASH.ld
+│   ├── Core/
+│   │   ├── Inc/
+│   │   ├── Src/
+│   │   └── Startup/
+│   ├── Drivers/
+│   │   └── STM32F1xx_HAL_Driver/
+│   ├── Middlewares/
+│   │   └── ST/STM32_USB_Device_Library/
+│   ├── tools/
+│   └── USB_DEVICE/
+├── hardware/              # KiCad design & PCB files
+│   ├── Jopen.kicad_pcb
+│   ├── Jopen.kicad_sch
+│   ├── mcu.kicad_sch
+│   ├── rs485.kicad_sch
+│   └── Jopen-backups/     # local backups (should be ignored)
+└── tools/                 # helper scripts and utilities
 ```
 
 ## 📄 License
