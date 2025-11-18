@@ -13,18 +13,18 @@ Open source arcade controller with STM32F102RB microcontroller.
 ## 📚 Documentation
 
 ### Quick Links
-- **[📋 PINOUT.md](PINOUT.md)** - Complete pin mapping and silkscreen reference
-- **[🔧 Firmware Documentation](firmware/README.md)** - Detailed firmware guide
-- **[⚡ Quick Start Guide](firmware/QUICK_START.md)** - Get started quickly
-- **[🔄 Mode Comparison](firmware/MODE_COMPARISON.md)** - Keyboard vs Joystick vs JVS
-- **[⚙️ Hardware Configuration](firmware/HARDWARE_CONFIG.md)** - Hardware setup
-- **[🕹️ JVS Protocol](firmware/JVS_PROTOCOL.md)** - JVS/RS485 arcade protocol
-- **[📝 Changelog](firmware/CHANGELOG.md)** - Version history
-- **[👥 Credits](firmware/CREDITS.md)** - Contributors and licenses
+-- **[📋 PINOUT.md](doc/PINOUT.md)** - Complete pin mapping and silkscreen reference
+- **[🔧 Firmware Documentation](doc/README.md)** - Detailed firmware guide
+- **[⚡ Quick Start Guide](doc/QUICK_START.md)** - Get started quickly
+- **[🔄 Mode Comparison](doc/MODE_COMPARISON.md)** - Keyboard vs Joystick vs JVS
+- **[⚙️ Hardware Configuration](doc/HARDWARE_CONFIG.md)** - Hardware setup
+- **[🕹️ JVS Protocol](doc/JVS_PROTOCOL.md)** - JVS/RS485 arcade protocol
+- **[📝 Changelog](doc/CHANGELOG.md)** - Version history
+- **[👥 Credits](doc/CREDITS.md)** - Contributors and licenses
 
 ## 🚀 Quick Start
 
-1. **Connect your arcade controls** - See [PINOUT.md](PINOUT.md) for connector pinout
+1. **Connect your arcade controls** - See [PINOUT.md](doc/PINOUT.md) for connector pinout
 2. **Select operating mode** - Edit `firmware/Core/Inc/usbd_hid_custom.h`
 3. **Compile and flash** - See [Quick Start Guide](firmware/QUICK_START.md)
 4. **Plug and play** - Device recognized as USB HID
@@ -50,7 +50,7 @@ Each connector has **silkscreen labels** (0-9, A-F, 10) for easy identification:
 | ... | ... | ... | ... |
 | 10 | 18 | ↑ | F1 |
 
-**See [PINOUT.md](PINOUT.md) for complete mapping.**
+**See [PINOUT.md](doc/PINOUT.md) for complete mapping.**
 
 ## 🔌 Operating Modes
 
