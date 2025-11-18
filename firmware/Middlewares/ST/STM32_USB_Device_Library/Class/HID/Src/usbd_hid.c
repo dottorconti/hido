@@ -48,6 +48,10 @@ EndBSPDependencies */
 #include "usbd_ctlreq.h"
 #include "usb_commands.h"  /* Vendor-specific commands (bootloader, version, etc.) */
 
+#ifdef USE_JOYSTICK_MODE
+#include "usbd_hid_custom.h"
+#endif
+
 
 /** @addtogroup STM32_USB_DEVICE_LIBRARY
   * @{
@@ -557,12 +561,20 @@ static uint8_t  USBD_HID_Setup(USBD_HandleTypeDef *pdev,
         case USB_REQ_GET_DESCRIPTOR:
           if (req->wValue >> 8 == HID_REPORT_DESC)
           {
-            len = MIN(HID_REPORT_DESC_SIZE, req->wLength);
 #ifdef USE_KEYBOARD_MODE
+            len = MIN(HID_REPORT_DESC_SIZE, req->wLength);
             pbuf = HID_KEYBOARD_ReportDesc;
 #elif defined(USE_JOYSTICK_MODE)
+            /* Prefer project's custom joystick descriptor when available */
+#ifdef HID_REPORT_DESC_SIZE_CUSTOM
+            len = MIN(HID_REPORT_DESC_SIZE_CUSTOM, req->wLength);
+            pbuf = (uint8_t *)HID_JOYSTICK_ReportDesc_Custom;
+#else
+            len = MIN(HID_REPORT_DESC_SIZE, req->wLength);
             pbuf = HID_JOYSTICK_ReportDesc;
+#endif
 #elif defined(USE_JVS_MODE)
+            len = MIN(HID_REPORT_DESC_SIZE, req->wLength);
             pbuf = HID_JVS_ReportDesc;
 #endif
           }
