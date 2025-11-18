@@ -2,7 +2,7 @@
 
 This document describes the complete pin mapping between the arcade connectors (A/B) silkscreen labels and the corresponding keyboard keys.
 
-> 📚 **Back to**: [Main README](README.md) | [Firmware Documentation](doc/firmware/README.md) | [Quick Start](doc/firmware/QUICK_START.md)
+> 📚 **Back to**: [Main README](README.md) | [Firmware Documentation](doc/README.md) | [Quick Start](doc/QUICK_START.md)
 
 ## Connector Pin Numbering
 - **Pin 1**: Common (COM) - Ground reference for all buttons
