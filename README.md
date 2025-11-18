@@ -13,7 +13,7 @@ Open source arcade controller with STM32F102RB microcontroller.
 ## 📚 Documentation
 
 ### Quick Links
--- **[📋 PINOUT.md](doc/firmware/PINOUT.md)** - Complete pin mapping and silkscreen reference
+- **[📋 PINOUT.md](doc/firmware/PINOUT.md)** - Complete pin mapping and silkscreen reference
 - **[🔧 Firmware Documentation](doc/README.md)** - Detailed firmware guide
 - **[⚡ Quick Start Guide](doc/QUICK_START.md)** - Get started quickly
 - **[🔄 Mode Comparison](doc/MODE_COMPARISON.md)** - Keyboard vs Joystick vs JVS
