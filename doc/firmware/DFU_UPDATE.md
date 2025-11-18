@@ -1,4 +1,4 @@
-# HIDO Firmware Update Guide
+# HIDO Firmware Update Guide (Coming Soon)
 
 ## Overview
 

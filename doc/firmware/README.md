@@ -1,7 +1,3 @@
-This firmware README has been moved to `doc/firmware/README.md`.
-The canonical documentation files have been consolidated into the `doc/` folder at the repository root.
-
-Please open `doc/firmware/README.md` for the full firmware documentation and build instructions.
 - **Key Rollover**: 96 keys NKRO (all arcade buttons + extras)
 
 ## 🐛 Troubleshooting

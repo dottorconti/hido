@@ -1,6 +1,3 @@
-This Quick Start guide has been moved to `doc/firmware/QUICK_START.md`.
-Please open that file under `doc/firmware/` for the updated quick start instructions, build and flash steps.
-
 ## LED Indicators
 
 - **LED1 (PC10)**: 
@@ -103,7 +100,6 @@ File: `Core/Inc/jvs_protocol.h`
 - `README.md`: Full project documentation
 - `HARDWARE_CONFIG.md`: Detailed pin mapping
 - `JVS_PROTOCOL.md`: JVS protocol specification
-- `ISTRUZIONI_UTENTE.md`: Italian user guide
 
 ## Support
 
