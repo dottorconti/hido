@@ -180,8 +180,8 @@ void Joystick_ProcessButtons(void)
                     case 4: joystick_report[player_idx].x = 255; break;  /* Right */
                 }
             } else {
-                /* Button press (0-13 for 14 buttons) */
-                if (mapping->button_num < 14) {
+                /* Button press (0-12 for 13 buttons) */
+                if (mapping->button_num < 13) {
                     joystick_report[player_idx].buttons |= (1 << mapping->button_num);
                 }
             }
