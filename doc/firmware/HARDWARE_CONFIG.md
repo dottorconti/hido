@@ -14,7 +14,7 @@ The tables below are the authoritative firmware pin mappings. They are derived f
 
 Source of truth:
 - Firmware macros: `firmware/Core/Inc/main.h`
-- Connector/schematic mapping: `doc/PINOUT.md`
+- Connector/schematic mapping: `doc/firmware/PINOUT.md`
 
 All inputs are configured as INPUT with PULL-UP (active LOW). Connect buttons between GPIO pin and GND (normally open switches).
 
@@ -68,7 +68,7 @@ All inputs are configured as INPUT with PULL-UP (active LOW). Connect buttons be
 | `P2_BTN13` | PB1 | J7 Pin 6 (ADC4, used as button)
 
 ### Notes
-- If you maintain a separate schematic-level mapping (connector silkscreen → MCU pin), keep that table in `doc/PINOUT.md` and use this file for firmware-visible macros.
+- If you maintain a separate schematic-level mapping (connector silkscreen → MCU pin), keep that table in `doc/firmware/PINOUT.md` and use this file for firmware-visible macros.
 - If you change pin macros in `firmware/Core/Inc/main.h`, update this document to match and vice versa — `main.h` is the single source of truth for compiled firmware.
 
 

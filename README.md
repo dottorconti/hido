@@ -13,7 +13,7 @@ Open source arcade controller with STM32F102RB microcontroller.
 ## 📚 Documentation
 
 ### Quick Links
--- **[📋 PINOUT.md](doc/PINOUT.md)** - Complete pin mapping and silkscreen reference
+-- **[📋 PINOUT.md](doc/firmware/PINOUT.md)** - Complete pin mapping and silkscreen reference
 - **[🔧 Firmware Documentation](doc/README.md)** - Detailed firmware guide
 - **[⚡ Quick Start Guide](doc/QUICK_START.md)** - Get started quickly
 - **[🔄 Mode Comparison](doc/MODE_COMPARISON.md)** - Keyboard vs Joystick vs JVS
@@ -24,7 +24,7 @@ Open source arcade controller with STM32F102RB microcontroller.
 
 ## 🚀 Quick Start
 
-1. **Connect your arcade controls** - See [PINOUT.md](doc/PINOUT.md) for connector pinout
+1. **Connect your arcade controls** - See [PINOUT.md](doc/firmware/PINOUT.md) for connector pinout
 2. **Select operating mode** - Edit `firmware/Core/Inc/usbd_hid_custom.h`
 3. **Compile and flash** - See [Quick Start Guide](firmware/QUICK_START.md)
 4. **Plug and play** - Device recognized as USB HID
@@ -50,7 +50,7 @@ Each connector has **silkscreen labels** (0-9, A-F, 10) for easy identification:
 | ... | ... | ... | ... |
 | 10 | 18 | ↑ | F1 |
 
-**See [PINOUT.md](doc/PINOUT.md) for complete mapping.**
+**See [PINOUT.md](doc/firmware/PINOUT.md) for complete mapping.**
 
 ## 🔌 Operating Modes
 
