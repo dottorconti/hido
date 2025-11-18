@@ -8,61 +8,69 @@ For **Keyboard Mode** mapping, see below. For **Joystick Mode**, buttons are map
 
 ---
 
-## 📌 GPIO Pin Mapping
+## 📌 GPIO Pin Mapping (Authoritative)
 
-### Input Pins (Arcade Buttons)
-All input pins are configured as **INPUT with PULL-UP** (active LOW).
-Connect buttons between GPIO pin and GND (normally open switches).
+The tables below are the authoritative firmware pin mappings. They are derived from the firmware source (`firmware/Core/Inc/main.h`) and represent the GPIO macros the code uses at compile time.
 
-#### Port A (GPIOA)
-| Pin   | Function      | Default Mapping |
-|-------|---------------|-----------------|
-| PA6   | Coin 1        | ESC (0x29)      |
-| PA7   | Start 1       | F1 (0x3A)       |
-| PA15  | Start 2       | F2 (0x3B)       |
+Source of truth:
+- Firmware macros: `firmware/Core/Inc/main.h`
+- Connector/schematic mapping: `doc/PINOUT.md`
 
-#### Port B (GPIOB) - Player 1 Primary
-| Pin    | Function      | Default Mapping        |
-|--------|---------------|------------------------|
-| PB2    | Service       | F3 (0x3C)              |
-| PB3    | P1 Up         | Up Arrow (0x52)        |
-| PB4    | P1 Down       | Down Arrow (0x51)      |
-| PB5    | P1 Left       | Left Arrow (0x50)      |
-| PB6    | P1 Right      | Right Arrow (0x4F)     |
-| PB7    | P1 Button 1   | Space (0x2C)           |
-| PB8    | P1 Button 2   | / (0x38)               |
-| PB9    | P1 Button 3   | Y (0x1C)               |
-| PB10   | P1 Button 4   | T (0x17)               |
-| PB11   | P1 Button 5   | R (0x15)               |
-| PB12   | P1 Button 6   | F (0x09)               |
-| PB13   | Test          | F4 (0x3D)              |
-| PB14   | Extra 1       | F5 (0x3E)              |
-| PB15   | Extra 2       | F6 (0x3F)              |
+All inputs are configured as INPUT with PULL-UP (active LOW). Connect buttons between GPIO pin and GND (normally open switches).
 
-#### Port C (GPIOC) - Player 2 Primary
-| Pin    | Function      | Default Mapping  |
-|--------|---------------|------------------|
-| PC0    | P2 Up         | W (0x1D)         |
-| PC1    | P2 Down       | S (0x16)         |
-| PC5    | P2 Left       | A (0x04)         |
-| PC6    | P2 Right      | D (0x07)         |
-| PC7    | P2 Button 1   | Q (0x14)         |
-| PC8    | P2 Button 2   | E (0x08)         |
-| PC9    | P2 Button 3   | [Reserved]       |
-| PC10   | LED 1 Output  | Status indicator |
-| PC11   | LED 2 Output  | -                |
-| PC12   | LED 3 Output  | -                |
-| PC13   | P2 Button 4   | O (0x12)         |
-| PC14   | P2 Button 5   | I (0x0C)         |
-| PC15   | P2 Button 6   | U (0x18)         |
+### LEDs (firmware macros)
+| Macro | GPIO Pin |
+|-------|----------|
+| `LED1` | PC10 |
+| `LED2` | PC11 |
+| `LED3` | PC12 |
 
-### Output Pins (LEDs)
-| Pin   | Function | Usage                    |
-|-------|----------|--------------------------|
-| PC10  | LED1     | Activity/Heartbeat       |
-| PC11  | LED2     | Reserved                 |
-| PC12  | LED3     | Reserved                 |
-| PC4   | Output   | General purpose          |
+### Player 1 (J6) - directionals and buttons (firmware macros)
+| Firmware Macro | GPIO Pin | Notes |
+|----------------|----------|-------|
+| `P1_UP` | PA15 | Joystick Up (J6 Pin 18 / IN26)
+| `P1_DOWN` | PB3  | Joystick Down (J6 Pin 17 / IN12)
+| `P1_LEFT` | PB4  | Joystick Left (J6 Pin 16 / IN11)
+| `P1_RIGHT` | PB5 | Joystick Right (J6 Pin 15 / IN10)
+| `P1_BTN1` | PA1  | J6 Pin 2 (TIM1)
+| `P1_BTN2` | PA0  | J6 Pin 3 (TIM2)
+| `P1_BTN3` | PC2  | J6 Pin 4 (ADC1)
+| `P1_BTN4` | PC3  | J6 Pin 5 (ADC2)
+| `P1_BTN5` | PC1  | J6 Pin 6 (IN1)
+| `P1_BTN6` | PC0  | J6 Pin 7 (IN2)
+| `P1_BTN7` | PC15 | J6 Pin 8 (IN3)
+| `P1_BTN8` | PC14 | J6 Pin 9 (IN4)
+| `P1_BTN9` | PC13 | J6 Pin 10 (IN5)
+| `P1_BTN10` | PB9 | J6 Pin 11 (IN6)
+| `P1_BTN11` | PB8 | J6 Pin 12 (IN7)
+| `P1_BTN12` | PB7 | J6 Pin 13 (IN8)
+| `P1_BTN13` | PB6 | J6 Pin 14 (IN9)
+
+### Player 2 (J7) - directionals and buttons (firmware macros)
+| Firmware Macro | GPIO Pin | Notes |
+|----------------|----------|-------|
+| `P2_UP` | PA6  | J7 Pin 18 (IN25)
+| `P2_DOWN` | PC9 | J7 Pin 17 (IN24)
+| `P2_LEFT` | PC8 | J7 Pin 16 (IN23)
+| `P2_RIGHT` | PC7 | J7 Pin 15 (TIM4)
+| `P2_BTN1` | PA7 | J7 Pin 2 (IN13)
+| `P2_BTN2` | PC4 | J7 Pin 3 (IN14)
+| `P2_BTN3` | PC5 | J7 Pin 4 (IN15)
+| `P2_BTN4` | PB2 | J7 Pin 7 (IN16)
+| `P2_BTN5` | PB10 | J7 Pin 8 (IN17)
+| `P2_BTN6` | PB11 | J7 Pin 9 (IN18)
+| `P2_BTN7` | PB12 | J7 Pin 10 (IN19)
+| `P2_BTN8` | PB13 | J7 Pin 11 (IN20)
+| `P2_BTN9` | PB14 | J7 Pin 12 (IN21)
+| `P2_BTN10` | PB15 | J7 Pin 13 (IN22)
+| `P2_BTN11` | PC6 | J7 Pin 14 (TIM3)
+| `P2_BTN12` | PB0 | J7 Pin 5 (ADC3, used as button)
+| `P2_BTN13` | PB1 | J7 Pin 6 (ADC4, used as button)
+
+### Notes
+- If you maintain a separate schematic-level mapping (connector silkscreen → MCU pin), keep that table in `doc/PINOUT.md` and use this file for firmware-visible macros.
+- If you change pin macros in `firmware/Core/Inc/main.h`, update this document to match and vice versa — `main.h` is the single source of truth for compiled firmware.
+
 
 ## 🔌 Connection Examples
 

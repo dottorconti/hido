@@ -18,7 +18,7 @@ extern "C" {
 
 /* Mode selection - uncomment only ONE */
 //#define USE_KEYBOARD_MODE    // NKRO Keyboard mode
-#define USE_JOYSTICK_MODE      // Arcade Joystick mode
+//#define USE_JOYSTICK_MODE      // Arcade Joystick mode
 //#define USE_JVS_MODE         // JVS protocol mode
 
 /* HID Configuration for Joystick Mode */

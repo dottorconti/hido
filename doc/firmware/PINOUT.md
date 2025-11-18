@@ -1,8 +1,8 @@
 # HIDO Pinout Mapping
 
-This document describes the complete pin mapping between the arcade connectors (J6/J7) silkscreen labels and the corresponding keyboard keys.
+This document describes the complete pin mapping between the arcade connectors (A/B) silkscreen labels and the corresponding keyboard keys.
 
-> 📚 **Back to**: [Main README](README.md) | [Firmware Documentation](firmware/README.md) | [Quick Start](firmware/QUICK_START.md)
+> 📚 **Back to**: [Main README](README.md) | [Firmware Documentation](doc/firmware/README.md) | [Quick Start](doc/firmware/QUICK_START.md)
 
 ## Connector Pin Numbering
 - **Pin 1**: Common (COM) - Ground reference for all buttons
@@ -91,10 +91,10 @@ The silkscreen labels on the PCB correspond to connector pins as follows:
 
 ### USB HID Descriptors
 
-HID descriptor and report-format details (keyboard and joystick descriptors, report IDs, and exact byte layouts) have been consolidated into `firmware/README.md`. See that file for the authoritative HID descriptor information and examples for building each firmware mode.
+HID descriptor and report-format details (keyboard and joystick descriptors, report IDs, and exact byte layouts) have been consolidated into `doc/firmware/README.md`. See that file for the authoritative HID descriptor information and examples for building each firmware mode.
 
 ### JVS Mode (RS485)
-- JVS/RS485 uses a separate firmware stack; physical pins use UART/RS485 transceiver lines (see `firmware/HARDWARE_CONFIG.md`).
+-- JVS/RS485 uses a separate firmware stack; physical pins use UART/RS485 transceiver lines (see `doc/firmware/HARDWARE_CONFIG.md`).
 - Not a USB HID device; used for JAMMA/JVS cabinets and IO boards.
 
 ### Firmware Configuration
@@ -103,7 +103,7 @@ HID descriptor and report-format details (keyboard and joystick descriptors, rep
 - **JVS Mode**: `USE_JVS_MODE` (arcade protocol)
 
 Select mode in `firmware/Middlewares/ST/STM32_USB_Device_Library/Class/HID/Inc/usbd_hid.h` or ...
-Select mode via the build scripts (`compile_direct.ps1 -Mode` or `build.ps1 -Mode`) — see `firmware/README.md` for details.
+Select mode via the build scripts (`compile_direct.ps1 -Mode` or `build.ps1 -Mode`) — see `doc/firmware/README.md` for details.
 ---
 
 *Last updated: November 13, 2025*

@@ -1,6 +1,11 @@
 # Direct compilation script - No Make required
 # Compiles HIDO firmware using arm-none-eabi-gcc directly
 
+param(
+    [ValidateSet('keyboard','joystick','jvs')]
+    [string]$Mode = 'keyboard'
+)
+
 $ErrorActionPreference = "Stop"
 
 Write-Host "================================" -ForegroundColor Cyan
@@ -28,7 +33,17 @@ New-Item -ItemType Directory -Path $BUILD_DIR | Out-Null
 
 # Compiler flags
 $MCU = "-mcpu=cortex-m3 -mthumb"
-$DEFS = "-DUSE_HAL_DRIVER -DSTM32F102xB -DUSE_KEYBOARD_MODE"
+
+# Mode -> preprocessor define selection
+switch ($Mode.ToLower()) {
+    'keyboard' { $MODE_DEF = '-DUSE_KEYBOARD_MODE' }
+    'joystick' { $MODE_DEF = '-DUSE_JOYSTICK_MODE' }
+    'jvs' { $MODE_DEF = '-DUSE_JVS_MODE' }
+    default { Write-Host "Unknown build mode: $Mode" -ForegroundColor Red; exit 1 }
+}
+
+$DEFS = "-DUSE_HAL_DRIVER -DSTM32F102xB $MODE_DEF"
+
 $INCLUDES = @(
     "-ICore/Inc",
     "-IDrivers/STM32F1xx_HAL_Driver/Inc",
@@ -57,12 +72,12 @@ $C_SOURCES = @(
     "Core/Src/system_stm32f1xx.c",
     "Core/Src/arcade_joystick.c",
     "Core/Src/arcade_keyboard.c",
+    "Core/Src/usb_commands.c",
+    "Core/Src/dfu_bootloader.c",
     "Core/Src/jvs_protocol.c",
     "Core/Src/usbd_hid_custom.c",
     "Core/Src/usbd_hid_raw.c",
     "Core/Src/gpio_test.c",
-    "Core/Src/dfu_bootloader.c",
-    "Core/Src/usb_commands.c",
     "Core/Src/flash_config.c",
     "USB_DEVICE/App/usb_device.c",
     "USB_DEVICE/App/usbd_desc.c",

@@ -46,8 +46,8 @@ static const JoystickButtonMapping_t button_map[] = {
     /* Player 1 - 13 Buttons (0-12): TIM1, TIM2, ADC1, ADC2, IN1-IN9 */
     {P1_BTN1_GPIO_Port, P1_BTN1_Pin, 1, 0, 0, true},      /* PA1 - Button 1 (TIM1) */
     {P1_BTN2_GPIO_Port, P1_BTN2_Pin, 1, 1, 0, true},      /* PA0 - Button 2 (TIM2) */
-    {P1_BTN3_GPIO_Port, P1_BTN3_Pin, 1, 2, 0, true},      /* PC2 - Button 3 (ADC1) */
-    {P1_BTN4_GPIO_Port, P1_BTN4_Pin, 1, 3, 0, true},      /* PC3 - Button 4 (ADC2) */
+    {P1_BTN3_GPIO_Port, P1_BTN3_Pin, 1, 3, 0, true},      /* PC2 - Button 3 (ADC1) */
+    {P1_BTN4_GPIO_Port, P1_BTN4_Pin, 1, 2, 0, true},      /* PC3 - Button 4 (ADC2) */
     {P1_BTN5_GPIO_Port, P1_BTN5_Pin, 1, 4, 0, true},      /* PC1 - Button 5 (IN1) */
     {P1_BTN6_GPIO_Port, P1_BTN6_Pin, 1, 5, 0, true},      /* PC0 - Button 6 (IN2) */
     {P1_BTN7_GPIO_Port, P1_BTN7_Pin, 1, 6, 0, true},      /* PC15 - Button 7 (IN3) */
@@ -65,19 +65,35 @@ static const JoystickButtonMapping_t button_map[] = {
     {P2_RIGHT_GPIO_Port, P2_RIGHT_Pin, 2, 255, 4, true},  /* PC7 - Right (TIM4) */
     
     /* Player 2 - 13 Buttons (0-12): IN13-IN15, IN16-IN22, TIM3, ADC3, ADC4 */
-    {P2_BTN1_GPIO_Port, P2_BTN1_Pin, 2, 0, 0, true},      /* PA7 - Button 1 (IN13) */
-    {P2_BTN2_GPIO_Port, P2_BTN2_Pin, 2, 1, 0, true},      /* PC4 - Button 2 (IN14) */
-    {P2_BTN3_GPIO_Port, P2_BTN3_Pin, 2, 2, 0, true},      /* PC5 - Button 3 (IN15) */
-    {P2_BTN4_GPIO_Port, P2_BTN4_Pin, 2, 3, 0, true},      /* PB2 - Button 4 (IN16) */
-    {P2_BTN5_GPIO_Port, P2_BTN5_Pin, 2, 4, 0, true},      /* PB10 - Button 5 (IN17) */
-    {P2_BTN6_GPIO_Port, P2_BTN6_Pin, 2, 5, 0, true},      /* PB11 - Button 6 (IN18) */
-    {P2_BTN7_GPIO_Port, P2_BTN7_Pin, 2, 6, 0, true},      /* PB12 - Button 7 (IN19) */
-    {P2_BTN8_GPIO_Port, P2_BTN8_Pin, 2, 7, 0, true},      /* PB13 - Button 8 (IN20) */
-    {P2_BTN9_GPIO_Port, P2_BTN9_Pin, 2, 8, 0, true},      /* PB14 - Button 9 (IN21) */
-    {P2_BTN10_GPIO_Port, P2_BTN10_Pin, 2, 9, 0, true},    /* PB15 - Button 10 (IN22) */
-    {P2_BTN11_GPIO_Port, P2_BTN11_Pin, 2, 10, 0, true},   /* PC6 - Button 11 (TIM3) */
-    {P2_BTN12_GPIO_Port, P2_BTN12_Pin, 2, 11, 0, true},   /* PB0 - Button 12 (ADC3) */
-    {P2_BTN13_GPIO_Port, P2_BTN13_Pin, 2, 12, 0, true},   /* PB1 - Button 13 (ADC4) */
+    /* Map buttons according to provided netlist order (IN13..IN22, TIM3)
+     * Logical button numbers 0..12 map to the following MCU pins:
+     * 0: IN13 PA7
+     * 1: IN14 PC4
+     * 2: IN15 PC5
+     * 3: ADC3 PB0
+     * 4: ADC4 PB1
+     * 5: IN16 PB2
+     * 6: IN17 PB10
+     * 7: IN18 PB11
+     * 8: IN19 PB12
+     * 9: IN20 PB13
+     * 10: IN21 PB14
+     * 11: IN22 PB15
+     * 12: TIM3 PC6
+     */
+    {GPIOA, GPIO_PIN_7, 2, 0, 0, true},   /* PA7  - IN13 -> logical button 0 */
+    {GPIOC, GPIO_PIN_4, 2, 1, 0, true},   /* PC4  - IN14 -> logical button 1 */
+    {GPIOC, GPIO_PIN_5, 2, 2, 0, true},   /* PC5  - IN15 -> logical button 2 */
+    {GPIOB, GPIO_PIN_0, 2, 3, 0, true},   /* PB0  - ADC3 -> logical button 3 */
+    {GPIOB, GPIO_PIN_1, 2, 4, 0, true},   /* PB1  - ADC4 -> logical button 4 */
+    {GPIOB, GPIO_PIN_2, 2, 5, 0, true},   /* PB2  - IN16 -> logical button 5 */
+    {GPIOB, GPIO_PIN_10,2, 6, 0, true},   /* PB10 - IN17 -> logical button 6 */
+    {GPIOB, GPIO_PIN_11,2, 7, 0, true},   /* PB11 - IN18 -> logical button 7 */
+    {GPIOB, GPIO_PIN_12,2, 8, 0, true},   /* PB12 - IN19 -> logical button 8 */
+    {GPIOB, GPIO_PIN_13,2, 9, 0, true},   /* PB13 - IN20 -> logical button 9 */
+    {GPIOB, GPIO_PIN_14,2,10, 0, true},   /* PB14 - IN21 -> logical button 10 */
+    {GPIOB, GPIO_PIN_15,2,11, 0, true},   /* PB15 - IN22 -> logical button 11 */
+    {GPIOC, GPIO_PIN_6, 2,12, 0, true},   /* PC6  - TIM3 -> logical button 12 */
 };
 
 #define BUTTON_MAP_SIZE (sizeof(button_map) / sizeof(button_map[0]))
@@ -172,9 +188,9 @@ void Joystick_ProcessButtons(void)
         }
     }
     
-    /* Mask buttons to ensure only 14 bits are used (bits 0-13), bits 14-15 must be 0 */
-    joystick_report[0].buttons &= 0x3FFF;  // 0011111111111111 = mask for 14 bits
-    joystick_report[1].buttons &= 0x3FFF;
+    /* Mask buttons to ensure only 13 bits are used (bits 0-12), bits 13-15 must be 0 */
+    joystick_report[0].buttons &= 0x1FFF;  // 0001111111111111 = mask for 13 bits
+    joystick_report[1].buttons &= 0x1FFF;
     
     /* LED blink for activity - Player 1: LED1, Player 2: LED2 */
     HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, player_activity[0] ? GPIO_PIN_SET : GPIO_PIN_RESET);

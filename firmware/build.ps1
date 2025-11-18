@@ -1,8 +1,22 @@
+param(
+    [ValidateSet('keyboard','joystick','jvs')]
+    [string]$Mode
+)
+
 # Build script for HIDO Arcade Keyboard
 # Requires ARM GCC toolchain in PATH
 
 Write-Host "=== HIDO Arcade Keyboard Build ===" -ForegroundColor Cyan
 Write-Host ""
+
+# If a Mode is supplied, delegate to the direct compiler wrapper so users
+# can build specific modes without editing source headers.
+if ($PSBoundParameters.ContainsKey('Mode')) {
+    Write-Host "Mode parameter detected: $Mode" -ForegroundColor Yellow
+    Write-Host "Delegating to .\compile_direct.ps1 -Mode $Mode" -ForegroundColor Yellow
+    & .\compile_direct.ps1 -Mode $Mode
+    exit $LASTEXITCODE
+}
 
 # Check if ARM GCC is available
 $gccCheck = Get-Command arm-none-eabi-gcc -ErrorAction SilentlyContinue
@@ -22,8 +36,8 @@ if (Test-Path "build") {
     Remove-Item -Recurse -Force build
 }
 
-# Build project
-Write-Host "Building project..." -ForegroundColor Yellow
+# Build project (default: use Makefile)
+Write-Host "Building project using Makefile..." -ForegroundColor Yellow
 $makeResult = make -j4 2>&1
 $LASTEXITCODE_MAKE = $LASTEXITCODE
 
