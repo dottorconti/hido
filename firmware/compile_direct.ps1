@@ -52,6 +52,7 @@ $INCLUDES = @(
     "-IDrivers/CMSIS/Include",
     "-IUSB_DEVICE/App",
     "-IUSB_DEVICE/Target",
+    "-IUSB_DEVICE/Class/CDC/Inc",
     "-IMiddlewares/ST/STM32_USB_Device_Library/Core/Inc",
     "-IMiddlewares/ST/STM32_USB_Device_Library/Class/HID/Inc"
 )
@@ -86,6 +87,7 @@ $C_SOURCES = @(
     "Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c",
     "Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c",
     "Middlewares/ST/STM32_USB_Device_Library/Class/HID/Src/usbd_hid.c",
+    "USB_DEVICE/Class/CDC/Src/usbd_cdc.c",
     "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c",
     "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc.c",
     "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc_ex.c",

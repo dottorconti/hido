@@ -278,8 +278,8 @@ __ALIGN_BEGIN uint8_t USBD_FS_CfgDesc[]  __ALIGN_END =
   /* Configuration Descriptor */
   0x09,   /* bLength: Configuration Descriptor size */
   USB_DESC_TYPE_CONFIGURATION,      /* bDescriptorType: Configuration */
-  0x49, 0x00, /* wTotalLength: 73 bytes (9 + 2*(9+9+7+7)) */
-  0x02,   /* bNumInterfaces: 2 interfaces */
+  0x8B, 0x00, /* wTotalLength: 139 bytes (config + 2 HID interfaces + CDC comm+data) */
+  0x04,   /* bNumInterfaces: 4 interfaces (HID std, HID raw, CDC comm, CDC data) */
   0x01,   /* bConfigurationValue: Configuration value */
   0x00,   /* iConfiguration: Index of string descriptor describing the configuration */
   0xE0,   /* bmAttributes: bus powered, remote wakeup */
@@ -366,6 +366,82 @@ __ALIGN_BEGIN uint8_t USBD_FS_CfgDesc[]  __ALIGN_END =
   HID_RAW_EPOUT_SIZE,    /* wMaxPacketSize: */
   0x00,
   HID_FS_BINTERVAL,          /* bInterval: */
+
+  /*---------------------------------------------------------------------------*/
+  /* CDC Interface Association Descriptor (IAD) */
+  0x08,   /* bLength */
+  0x0B,   /* bDescriptorType: IAD */
+  0x02,   /* bFirstInterface */
+  0x02,   /* bInterfaceCount */
+  0x02,   /* bFunctionClass: CDC */
+  0x02,   /* bFunctionSubClass */
+  0x01,   /* bFunctionProtocol */
+  0x00,   /* iFunction */
+
+  /* Interface 2: CDC Communication Interface */
+  0x09,   /* bLength: Interface Descriptor size */
+  USB_DESC_TYPE_INTERFACE,  /* bDescriptorType: Interface descriptor type */
+  0x02,   /* bInterfaceNumber: 2 */
+  0x00,   /* bAlternateSetting: 0 */
+  0x01,   /* bNumEndpoints: 1 (notification) */
+  0x02,   /* bInterfaceClass: CDC */
+  0x02,   /* bInterfaceSubClass : Abstract Control Model */
+  0x01,   /* bInterfaceProtocol : Common AT commands */
+  0x00,   /* iInterface: */
+
+  /* CDC Header Functional Descriptor */
+  0x05,   /* bFunctionLength */
+  0x24,   /* bDescriptorType: CS_INTERFACE */
+  0x00,   /* bDescriptorSubtype: Header Func Desc */
+  0x10, 0x01, /* bcdCDC: 1.10 */
+
+  /* CDC ACM Functional Descriptor */
+  0x04,
+  0x24,
+  0x02,
+  0x02,
+
+  /* CDC Union Functional Descriptor */
+  0x05,
+  0x24,
+  0x06,
+  0x02, /* bMasterInterface: comm (2) */
+  0x03, /* bSlaveInterface0: data (3) */
+
+  /* Endpoint Descriptor (Notification) */
+  0x07,   /* bLength: Endpoint Descriptor size */
+  USB_DESC_TYPE_ENDPOINT,
+  0x83,   /* bEndpointAddress: IN 3 (interrupt) */
+  0x03,   /* bmAttributes: Interrupt */
+  0x08, 0x00, /* wMaxPacketSize: 8 */
+  0xFF,   /* bInterval (unused placeholder) */
+
+  /* Interface 3: CDC Data Interface */
+  0x09,   /* bLength: Interface Descriptor size */
+  USB_DESC_TYPE_INTERFACE,  /* bDescriptorType: Interface descriptor type */
+  0x03,   /* bInterfaceNumber: 3 */
+  0x00,   /* bAlternateSetting: 0 */
+  0x02,   /* bNumEndpoints: 2 */
+  0x0A,   /* bInterfaceClass: Data */
+  0x00,   /* bInterfaceSubClass : */
+  0x00,   /* bInterfaceProtocol : */
+  0x00,   /* iInterface: */
+
+  /* Endpoint Descriptor OUT (CDC Data) */
+  0x07,
+  USB_DESC_TYPE_ENDPOINT,
+  0x04,   /* bEndpointAddress: OUT 4 */
+  0x02,   /* bmAttributes: Bulk */
+  0x40, 0x00, /* wMaxPacketSize: 64 */
+  0x00,
+
+  /* Endpoint Descriptor IN (CDC Data) */
+  0x07,
+  USB_DESC_TYPE_ENDPOINT,
+  0x84,   /* bEndpointAddress: IN 4 */
+  0x02,   /* bmAttributes: Bulk */
+  0x40, 0x00, /* wMaxPacketSize: 64 */
+  0x00,
 };
 
 /**
