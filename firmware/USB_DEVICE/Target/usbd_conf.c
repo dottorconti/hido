@@ -335,7 +335,14 @@ USBD_StatusTypeDef USBD_LL_Init(USBD_HandleTypeDef *pdev)
   /* USER CODE END EndPoint_Configuration */
   /* USER CODE BEGIN EndPoint_Configuration_HID */
   HAL_PCDEx_PMAConfig((PCD_HandleTypeDef*)pdev->pData , 0x81 , PCD_SNG_BUF, 0x100);
-  /* USER CODE END EndPoint_Configuration_HID */
+    /* Reserve PMA for future CDC endpoints: notification IN (0x82),
+      data OUT (0x03) and data IN (0x83). Addresses chosen to avoid overlap
+      with existing EP0 and HID allocations. Adjust if PMA usage exceeds
+      device limits. */
+    HAL_PCDEx_PMAConfig((PCD_HandleTypeDef*)pdev->pData , 0x82 , PCD_SNG_BUF, 0x140);
+    HAL_PCDEx_PMAConfig((PCD_HandleTypeDef*)pdev->pData , 0x03 , PCD_SNG_BUF, 0x180);
+    HAL_PCDEx_PMAConfig((PCD_HandleTypeDef*)pdev->pData , 0x83 , PCD_SNG_BUF, 0x1C0);
+    /* USER CODE END EndPoint_Configuration_HID */
   return USBD_OK;
 }
 
