@@ -25,6 +25,7 @@
 #include "usbd_core.h"
 #include "usbd_desc.h"
 #include "usbd_hid.h"
+#include "usbd_composite.h"
 
 /* USER CODE BEGIN Includes */
 
@@ -72,8 +73,8 @@ void MX_USB_DEVICE_Init(void)
   {
     Error_Handler();
   }
-  // Registra la prima interfaccia HID (tastiera/joystick)
-  if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_HID) != USBD_OK)
+  // Register composite class (HID + CDC)
+  if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_COMPOSITE) != USBD_OK)
   {
     Error_Handler();
   }

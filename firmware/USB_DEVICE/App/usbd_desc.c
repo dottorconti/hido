@@ -47,6 +47,7 @@
 
 /* USER CODE BEGIN INCLUDE */
 #include "usbd_hid.h"  /* For mode selection defines */
+#include "usbd_cdc.h"
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -107,6 +108,17 @@ __ALIGN_BEGIN uint8_t USBD_StringSerial[USB_SIZ_STRING_SERIAL] __ALIGN_END = {0}
 
 // Include per tipi standard
 #include <stdint.h>
+
+/* Ensure HID OUT endpoint and report size macros exist (used in descriptor) */
+#ifndef HID_CUSTOM_REPORT_DESC_SIZE
+#define HID_CUSTOM_REPORT_DESC_SIZE   0x3F
+#endif
+#ifndef HID_EPOUT_ADDR
+#define HID_EPOUT_ADDR                0x01
+#endif
+#ifndef HID_EPOUT_SIZE
+#define HID_EPOUT_SIZE                0x40
+#endif
 
 // Buffer per le stringhe USB
 // Endpoint e dimensioni per interfaccia custom (prima interfaccia)
@@ -250,8 +262,8 @@ __ALIGN_BEGIN uint8_t USBD_FS_CfgDesc[]  __ALIGN_END =
   /* Configuration Descriptor */
   0x09,   /* bLength: Configuration Descriptor size */
   USB_DESC_TYPE_CONFIGURATION,      /* bDescriptorType: Configuration */
-  0x29, 0x00, /* wTotalLength: 41 bytes (9 + (9+9+7+7)) */
-  0x01,   /* bNumInterfaces: 1 interface */
+  0x6D, 0x00, /* wTotalLength: 109 bytes (updated for HID + CDC) */
+  0x03,   /* bNumInterfaces: 3 interfaces (HID + CDC comm + CDC data) */
   0x01,   /* bConfigurationValue: Configuration value */
   0x00,   /* iConfiguration: Index of string descriptor describing the configuration */
   0xE0,   /* bmAttributes: bus powered, remote wakeup */
@@ -297,6 +309,66 @@ __ALIGN_BEGIN uint8_t USBD_FS_CfgDesc[]  __ALIGN_END =
   HID_EPOUT_SIZE,    /* wMaxPacketSize: */
   0x00,
   HID_FS_BINTERVAL,          /* bInterval: */
+
+  /*---------------------------------------------------------------------------*/
+  /* Interface 1: CDC Communication Interface */
+  0x09,   /* bLength: Interface Descriptor size */
+  USB_DESC_TYPE_INTERFACE,  /* bDescriptorType: Interface descriptor type */
+  0x01,   /* bInterfaceNumber: 1 */
+  0x00,   /* bAlternateSetting: 0 */
+  0x01,   /* bNumEndpoints: 1 (notification) */
+  0x02,   /* bInterfaceClass: CDC */
+  0x02,   /* bInterfaceSubClass: Abstract Control Model */
+  0x01,   /* bInterfaceProtocol: Common AT commands */
+  0x00,   /* iInterface */
+
+  /* CDC Header Functional Descriptor */
+  0x05, 0x24, 0x00, 0x10, 0x01,
+  /* CDC Call Management Functional Descriptor */
+  0x05, 0x24, 0x01, 0x00, 0x02,
+  /* CDC ACM Functional Descriptor */
+  0x04, 0x24, 0x02, 0x02,
+  /* CDC Union Functional Descriptor (master=1, slave=2) */
+  0x05, 0x24, 0x06, 0x01, 0x02,
+
+  /* Endpoint Descriptor (Notification IN) */
+  0x07,   /* bLength: Endpoint Descriptor size */
+  USB_DESC_TYPE_ENDPOINT, /* bDescriptorType: */
+  CDC_CMD_EP,     /* bEndpointAddress: Endpoint Address (IN) */
+  0x03,   /* bmAttributes: Interrupt endpoint */
+  CDC_CMD_PACKET_SIZE, /* wMaxPacketSize: */
+  0x00,
+  0x10, /* bInterval: */
+
+  /*---------------------------------------------------------------------------*/
+  /* Interface 2: CDC Data Interface */
+  0x09,   /* bLength: Interface Descriptor size */
+  USB_DESC_TYPE_INTERFACE,  /* bDescriptorType: Interface descriptor type */
+  0x02,   /* bInterfaceNumber: 2 */
+  0x00,   /* bAlternateSetting: 0 */
+  0x02,   /* bNumEndpoints: 2 (bulk IN, bulk OUT) */
+  0x0A,   /* bInterfaceClass: Data */
+  0x00,   /* bInterfaceSubClass */
+  0x00,   /* bInterfaceProtocol */
+  0x00,   /* iInterface */
+
+  /* Endpoint Descriptor IN (CDC Data) */
+  0x07,   /* bLength: Endpoint Descriptor size */
+  USB_DESC_TYPE_ENDPOINT, /* bDescriptorType: */
+  CDC_IN_EP,     /* bEndpointAddress: Endpoint Address (IN) */
+  0x02,   /* bmAttributes: Bulk endpoint */
+  CDC_DATA_FS_MAX_PACKET_SIZE,     /* wMaxPacketSize: */
+  0x00,
+  0x00,          /* bInterval: */
+
+  /* Endpoint Descriptor OUT (CDC Data) */
+  0x07,   /* bLength: Endpoint Descriptor size */
+  USB_DESC_TYPE_ENDPOINT, /* bDescriptorType: */
+  CDC_OUT_EP,    /* bEndpointAddress: Endpoint Address (OUT) */
+  0x02,   /* bmAttributes: Bulk endpoint */
+  CDC_DATA_FS_MAX_PACKET_SIZE,    /* wMaxPacketSize: */
+  0x00,
+  0x00, /* bInterval: */
 };
 
 /**
