@@ -869,16 +869,22 @@ void USBD_GetString(uint8_t *desc, uint8_t *unicode, uint16_t *len)
 {
   uint8_t idx = 0U;
 
-  if (desc != NULL)
+  if (desc == NULL)
   {
-    *len = (uint16_t)USBD_GetLen(desc) * 2U + 2U;
-    unicode[idx++] = *(uint8_t *)(void *)len;
+    *len = 0U;
+    return;
+  }
+
+  {
+    uint8_t l = (uint8_t)USBD_GetLen(desc);
+    *len = (uint16_t)(2U + (uint16_t)l * 2U);
+    unicode[idx++] = (uint8_t)(*len);
     unicode[idx++] = USB_DESC_TYPE_STRING;
 
-    while (*desc != '\0')
+    for (uint8_t i = 0U; i < l; ++i)
     {
-      unicode[idx++] = *desc++;
-      unicode[idx++] =  0U;
+      unicode[idx++] = desc[i];
+      unicode[idx++] = 0x00U;
     }
   }
 }

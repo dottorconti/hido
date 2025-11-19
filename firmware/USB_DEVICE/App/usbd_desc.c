@@ -47,6 +47,7 @@
 
 /* USER CODE BEGIN INCLUDE */
 #include "usbd_hid.h"  /* For mode selection defines */
+#include "usbd_hid_custom.h"
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -100,7 +101,7 @@ __ALIGN_BEGIN uint8_t USBD_StringSerial[USB_SIZ_STRING_SERIAL] __ALIGN_END = {0}
   #define USBD_PRODUCT_STRING_FS     "HIDO HID Device"
 #endif
 
-#define USBD_CONFIGURATION_STRING_FS     "HID Config"
+#define USBD_CONFIGURATION_STRING_FS     "HIDO Config USB"
 #define USBD_INTERFACE_STRING_FS     "HID Interface"
 #define USBD_INTERFACE2_STRING_FS    "HIDO Config"
 
@@ -114,7 +115,11 @@ __ALIGN_BEGIN uint8_t USBD_StringSerial[USB_SIZ_STRING_SERIAL] __ALIGN_END = {0}
 
 // Assicurati che le macro per la prima interfaccia (custom) esistano
 #ifndef HID_CUSTOM_REPORT_DESC_SIZE
-#define HID_CUSTOM_REPORT_DESC_SIZE   0x3F
+  #ifdef HID_REPORT_DESC_SIZE_CUSTOM_P1
+    #define HID_CUSTOM_REPORT_DESC_SIZE   HID_REPORT_DESC_SIZE_CUSTOM_P1
+  #else
+    #define HID_CUSTOM_REPORT_DESC_SIZE   0x3F
+  #endif
 #endif
 #ifndef HID_EPOUT_ADDR
 #define HID_EPOUT_ADDR                0x01
@@ -231,9 +236,9 @@ __ALIGN_BEGIN uint8_t USBD_FS_DeviceDesc[USB_LEN_DEV_DESC] __ALIGN_END =
   USB_DESC_TYPE_DEVICE,       /*bDescriptorType*/
   0x00,                       /*bcdUSB */
   0x02,
-  0x00,                       /*bDeviceClass*/
-  0x00,                       /*bDeviceSubClass*/
-  0x00,                       /*bDeviceProtocol*/
+  0xEF,                       /*bDeviceClass: Miscellaneous (IAD composite device) */
+  0x02,                       /*bDeviceSubClass: Common Class */
+  0x01,                       /*bDeviceProtocol: Interface Association Descriptor */
   USB_MAX_EP0_SIZE,           /*bMaxPacketSize*/
   LOBYTE(USBD_VID),           /*idVendor*/
   HIBYTE(USBD_VID),           /*idVendor*/
@@ -281,7 +286,7 @@ __ALIGN_BEGIN uint8_t USBD_FS_CfgDesc[]  __ALIGN_END =
   /* Configuration Descriptor */
   0x09,   /* bLength: Configuration Descriptor size */
   USB_DESC_TYPE_CONFIGURATION,      /* bDescriptorType: Configuration */
-  0x49, 0x00, /* wTotalLength: 73 bytes (9 + 2*(9+9+7+7)) */
+  0x42, 0x00, /* wTotalLength: 66 bytes (HID + HID_RAW) - removed HID OUT endpoint (7 bytes) */
   0x02,   /* bNumInterfaces: 2 interfaces */
   0x01,   /* bConfigurationValue: Configuration value */
   0x00,   /* iConfiguration: Index of string descriptor describing the configuration */
@@ -294,11 +299,12 @@ __ALIGN_BEGIN uint8_t USBD_FS_CfgDesc[]  __ALIGN_END =
   USB_DESC_TYPE_INTERFACE,  /* bDescriptorType: Interface descriptor type */
   0x00,   /* bInterfaceNumber: 0 */
   0x00,   /* bAlternateSetting: Alternate setting */
-  0x02,   /* bNumEndpoints */
+  0x01,   /* bNumEndpoints: only IN endpoint (OUT removed) */
   0x03,   /* bInterfaceClass: HID */
   0x00,   /* bInterfaceSubClass : 1=BOOT, 0=no boot */
   0x00,   /* nInterfaceProtocol : 0=none, 1=keyboard, 2=mouse */
   0x00,   /* iInterface: */
+  0x06,   /* iInterface: string index for HID Player 1 */
 
   /* HID Descriptor (standard) */
   0x09,   /* bLength: HID Descriptor size */
@@ -340,6 +346,7 @@ __ALIGN_BEGIN uint8_t USBD_FS_CfgDesc[]  __ALIGN_END =
   0x00,   /* bInterfaceSubClass : 0 */
   0x00,   /* nInterfaceProtocol : 0 */
   0x00,   /* iInterface: no string */
+  0x07,   /* iInterface: string index for HID Player 2 */
 
   /* HID Descriptor (RAW) */
   0x09,   /* bLength: HID Descriptor size */
@@ -361,14 +368,7 @@ __ALIGN_BEGIN uint8_t USBD_FS_CfgDesc[]  __ALIGN_END =
   0x00,
   HID_FS_BINTERVAL,          /* bInterval: */
 
-  /* Endpoint Descriptor OUT (RAW) */
-  0x07,   /* bLength: Endpoint Descriptor size */
-  USB_DESC_TYPE_ENDPOINT, /* bDescriptorType: */
-  HID_RAW_EPOUT_ADDR,    /* bEndpointAddress: Endpoint Address (OUT) */
-  0x03,   /* bmAttributes: Interrupt endpoint */
-  HID_RAW_EPOUT_SIZE,    /* wMaxPacketSize: */
-  0x00,
-  HID_FS_BINTERVAL,          /* bInterval: */
+  /* HID OUT endpoint removed (not used by class) */
 };
 
 /* Export the size of the FS configuration descriptor so other TUs can use it */

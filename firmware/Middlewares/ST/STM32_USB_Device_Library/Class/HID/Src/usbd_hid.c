@@ -565,10 +565,19 @@ static uint8_t  USBD_HID_Setup(USBD_HandleTypeDef *pdev,
             len = MIN(HID_REPORT_DESC_SIZE, req->wLength);
             pbuf = HID_KEYBOARD_ReportDesc;
 #elif defined(USE_JOYSTICK_MODE)
-            /* Prefer project's custom joystick descriptor when available */
-#ifdef HID_REPORT_DESC_SIZE_CUSTOM
-            len = MIN(HID_REPORT_DESC_SIZE_CUSTOM, req->wLength);
-            pbuf = (uint8_t *)HID_JOYSTICK_ReportDesc_Custom;
+            /* Prefer project's custom joystick descriptor when available.
+               If the request targets interface 0, serve the P1 descriptor. */
+#ifdef HID_REPORT_DESC_SIZE_CUSTOM_P1
+            if (req->wIndex == 0)
+            {
+              len = MIN(HID_REPORT_DESC_SIZE_CUSTOM_P1, req->wLength);
+              pbuf = (uint8_t *)HID_JOYSTICK_ReportDesc_P1;
+            }
+            else
+            {
+              len = MIN(HID_REPORT_DESC_SIZE, req->wLength);
+              pbuf = HID_JOYSTICK_ReportDesc;
+            }
 #else
             len = MIN(HID_REPORT_DESC_SIZE, req->wLength);
             pbuf = HID_JOYSTICK_ReportDesc;

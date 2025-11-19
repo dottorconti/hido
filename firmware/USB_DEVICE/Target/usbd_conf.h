@@ -72,6 +72,7 @@
 #define USBD_DEBUG_LEVEL     0
 /*---------- -----------*/
 #define USBD_SELF_POWERED     1
+#define USBD_SUPPORT_USER_STRING_DESC 1
 /*---------- -----------*/
 #define HID_FS_BINTERVAL     0xA
 

@@ -23,14 +23,26 @@ extern "C" {
 
 /* HID Configuration for Joystick Mode */
 #ifdef USE_JOYSTICK_MODE
-  /* Report size: 1 Report ID + 2 axes + 2 bytes buttons = 5 bytes per report */
-  #define HID_EPIN_SIZE_CUSTOM          0x06U
-  
-  /* Descriptor size: Dual joystick with TWO Application Collections (2 devices) */
-  #define HID_REPORT_DESC_SIZE_CUSTOM   102U
+    /* Report size: per-report payload; set endpoint packet size to 64 bytes
+      to accommodate the full joystick report descriptor on Full-Speed USB. */
+    #define HID_EPIN_SIZE_CUSTOM          0x40U
 
-  /* Custom HID Report Descriptor - Dual Joystick with 14 buttons each */
-  extern const uint8_t HID_JOYSTICK_ReportDesc_Custom[HID_REPORT_DESC_SIZE_CUSTOM];
+    /* Override default HID_EPIN_SIZE from the middleware to ensure all
+      descriptors and endpoint open calls use the 64-byte max packet size. */
+  #ifdef HID_EPIN_SIZE
+  #undef HID_EPIN_SIZE
+  #endif
+  #define HID_EPIN_SIZE HID_EPIN_SIZE_CUSTOM
+
+  /* Split the combined report into two per-player descriptors so the
+     device exposes two separate HID interfaces. Sizes below are the
+     byte-lengths for each player's report descriptor. */
+  #define HID_REPORT_DESC_SIZE_CUSTOM_P1   44U
+  #define HID_REPORT_DESC_SIZE_CUSTOM_P2   44U
+
+  /* Custom HID Report Descriptors - one array per player */
+  extern const uint8_t HID_JOYSTICK_ReportDesc_P1[HID_REPORT_DESC_SIZE_CUSTOM_P1];
+  extern const uint8_t HID_JOYSTICK_ReportDesc_P2[HID_REPORT_DESC_SIZE_CUSTOM_P2];
 #endif
 
 #ifdef __cplusplus
