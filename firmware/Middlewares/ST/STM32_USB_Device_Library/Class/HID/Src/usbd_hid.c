@@ -383,16 +383,16 @@ __ALIGN_BEGIN static uint8_t HID_JOYSTICK_ReportDesc[HID_REPORT_DESC_SIZE] __ALI
     /* Player 1 Buttons */
     0x05, 0x09,        //   USAGE_PAGE (Button)
     0x19, 0x01,        //   USAGE_MINIMUM (Button 1)
-    0x29, 0x0E,        //   USAGE_MAXIMUM (Button 14)
+    0x29, 0x0D,        //   USAGE_MAXIMUM (Button 13)
     0x15, 0x00,        //   LOGICAL_MINIMUM (0)
     0x25, 0x01,        //   LOGICAL_MAXIMUM (1)
     0x75, 0x01,        //   REPORT_SIZE (1)
-    0x95, 0x0E,        //   REPORT_COUNT (14)
+    0x95, 0x0D,        //   REPORT_COUNT (13)
     0x81, 0x02,        //   INPUT (Data,Var,Abs)
     
     /* Padding */
     0x75, 0x01,        //   REPORT_SIZE (1)
-    0x95, 0x02,        //   REPORT_COUNT (2)
+    0x95, 0x03,        //   REPORT_COUNT (3)
     0x81, 0x01,        //   INPUT (Const)
     
     0xC0,              // END_COLLECTION (Application)
@@ -418,16 +418,16 @@ __ALIGN_BEGIN static uint8_t HID_JOYSTICK_ReportDesc[HID_REPORT_DESC_SIZE] __ALI
     /* Player 2 Buttons */
     0x05, 0x09,        //   USAGE_PAGE (Button)
     0x19, 0x01,        //   USAGE_MINIMUM (Button 1)
-    0x29, 0x0E,        //   USAGE_MAXIMUM (Button 14)
+    0x29, 0x0D,        //   USAGE_MAXIMUM (Button 13)
     0x15, 0x00,        //   LOGICAL_MINIMUM (0)
     0x25, 0x01,        //   LOGICAL_MAXIMUM (1)
     0x75, 0x01,        //   REPORT_SIZE (1)
-    0x95, 0x0E,        //   REPORT_COUNT (14)
+    0x95, 0x0D,        //   REPORT_COUNT (13)
     0x81, 0x02,        //   INPUT (Data,Var,Abs)
     
     /* Padding */
     0x75, 0x01,        //   REPORT_SIZE (1)
-    0x95, 0x02,        //   REPORT_COUNT (2)
+    0x95, 0x03,        //   REPORT_COUNT (3)
     0x81, 0x01,        //   INPUT (Const)
     
     0xC0               // END_COLLECTION (Application)
