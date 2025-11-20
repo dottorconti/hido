@@ -20,13 +20,74 @@
   *         - Windows sees: 2 separate joystick devices
   *         - Descriptor size: 98 bytes
   */
-/* HID report descriptor compatible with the Arduino Joystick library
-   (Report ID = 0x03) for a single gamepad with 30 buttons and no axes.
-   The array is sized to HID_REPORT_DESC_SIZE_CUSTOM; remaining bytes are
-   zero-padded by C initialization rules so the middleware can continue to
-   reference the same descriptor length macro. */
+/* Combined HID Report Descriptor:
+   - Player 1: Report ID = 1, layout [ReportID][X][Y][BtnLow][BtnHigh]
+       (2 axes 8-bit + 13 buttons packed into 2 bytes)
+   - Player 2: Report ID = 2, same layout as Player 1
+   - Arduino-compatible device: Report ID = 3, 30 buttons packed into 4 bytes
+
+   The array length is HID_REPORT_DESC_SIZE_CUSTOM; remaining bytes are
+   zero-padded by C initialization rules. Keep descriptor order consistent
+   with how `JoystickReport_t` and helper send functions build report buffers.
+*/
 const uint8_t HID_JOYSTICK_ReportDesc_Custom[HID_REPORT_DESC_SIZE_CUSTOM] = {
-  /* Collection: Gamepad */
+  /* --- Player 1 (Report ID 1): X, Y (8-bit), 13 buttons (bits 0-12) --- */
+  0x05, 0x01,       // USAGE_PAGE (Generic Desktop)
+  0x09, 0x05,       // USAGE (Game Pad)
+  0xA1, 0x01,       // COLLECTION (Application)
+    0x85, 0x01,     //   REPORT_ID (1)
+    /* Axes X,Y */
+    0x09, 0x30,     //   USAGE (X)
+    0x09, 0x31,     //   USAGE (Y)
+    0x15, 0x00,     //   LOGICAL_MINIMUM (0)
+    0x25, 0xFF,     //   LOGICAL_MAXIMUM (255)
+    0x75, 0x08,     //   REPORT_SIZE (8)
+    0x95, 0x02,     //   REPORT_COUNT (2)
+    0x81, 0x02,     //   INPUT (Data,Var,Abs)
+    /* Buttons (13 bits) */
+    0x05, 0x09,     //   USAGE_PAGE (Button)
+    0x19, 0x01,     //   USAGE_MINIMUM (Button 1)
+    0x29, 0x0D,     //   USAGE_MAXIMUM (Button 13)
+    0x15, 0x00,     //   LOGICAL_MINIMUM (0)
+    0x25, 0x01,     //   LOGICAL_MAXIMUM (1)
+    0x75, 0x01,     //   REPORT_SIZE (1)
+    0x95, 0x0D,     //   REPORT_COUNT (13)
+    0x81, 0x02,     //   INPUT (Data,Var,Abs)
+    /* Padding bits to align to 16-bit button field (3 bits) */
+    0x95, 0x03,     //   REPORT_COUNT (3)
+    0x75, 0x01,     //   REPORT_SIZE (1)
+    0x81, 0x03,     //   INPUT (Const)
+  0xC0,             // END_COLLECTION
+
+  /* --- Player 2 (Report ID 2): same layout --- */
+  0x05, 0x01,       // USAGE_PAGE (Generic Desktop)
+  0x09, 0x05,       // USAGE (Game Pad)
+  0xA1, 0x01,       // COLLECTION (Application)
+    0x85, 0x02,     //   REPORT_ID (2)
+    /* Axes X,Y */
+    0x09, 0x30,     //   USAGE (X)
+    0x09, 0x31,     //   USAGE (Y)
+    0x15, 0x00,     //   LOGICAL_MINIMUM (0)
+    0x25, 0xFF,     //   LOGICAL_MAXIMUM (255)
+    0x75, 0x08,     //   REPORT_SIZE (8)
+    0x95, 0x02,     //   REPORT_COUNT (2)
+    0x81, 0x02,     //   INPUT (Data,Var,Abs)
+    /* Buttons (13 bits) */
+    0x05, 0x09,     //   USAGE_PAGE (Button)
+    0x19, 0x01,     //   USAGE_MINIMUM (Button 1)
+    0x29, 0x0D,     //   USAGE_MAXIMUM (Button 13)
+    0x15, 0x00,     //   LOGICAL_MINIMUM (0)
+    0x25, 0x01,     //   LOGICAL_MAXIMUM (1)
+    0x75, 0x01,     //   REPORT_SIZE (1)
+    0x95, 0x0D,     //   REPORT_COUNT (13)
+    0x81, 0x02,     //   INPUT (Data,Var,Abs)
+    /* Padding bits to align to 16-bit button field (3 bits) */
+    0x95, 0x03,     //   REPORT_COUNT (3)
+    0x75, 0x01,     //   REPORT_SIZE (1)
+    0x81, 0x03,     //   INPUT (Const)
+  0xC0,             // END_COLLECTION
+
+  /* --- Arduino-compatible 30-button device (Report ID 3) --- */
   0x05, 0x01,       // USAGE_PAGE (Generic Desktop)
   0x09, 0x05,       // USAGE (Game Pad)
   0xA1, 0x01,       // COLLECTION (Application)
@@ -43,6 +104,7 @@ const uint8_t HID_JOYSTICK_ReportDesc_Custom[HID_REPORT_DESC_SIZE_CUSTOM] = {
     0x75, 0x01,     //   REPORT_SIZE (1)
     0x81, 0x03,     //   INPUT (Const) - padding
   0xC0,             // END_COLLECTION
+
   /* Remaining bytes (up to HID_REPORT_DESC_SIZE_CUSTOM) are zero */
 };
 

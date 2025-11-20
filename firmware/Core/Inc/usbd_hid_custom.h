@@ -27,7 +27,9 @@ extern "C" {
   #define HID_EPIN_SIZE_CUSTOM          0x06U
   
   /* Descriptor size: Dual joystick with TWO Application Collections (2 devices) */
-  #define HID_REPORT_DESC_SIZE_CUSTOM   102U
+    /* Increased to accommodate two joystick collections plus an additional
+      Arduino-compatible 30-button collection (Report ID 3). */
+    #define HID_REPORT_DESC_SIZE_CUSTOM   128U
 
   /* Custom HID Report Descriptor - Dual Joystick with 14 buttons each */
   extern const uint8_t HID_JOYSTICK_ReportDesc_Custom[HID_REPORT_DESC_SIZE_CUSTOM];
