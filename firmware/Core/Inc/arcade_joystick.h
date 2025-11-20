@@ -48,6 +48,11 @@ typedef struct {
 void Joystick_Init(void);
 void Joystick_ProcessButtons(void);
 void Joystick_SendReport(void);
+/* Send a 30-button report compatible with Arduino Joystick library
+  Format: [Report ID = 0x03][B0][B1][B2][B3] (5 bytes)
+  `buttonBytes` must point to at least 4 bytes containing the packed
+  button bits (LSB = Button 1). */
+void Joystick_Send_Arduino30(const uint8_t *buttonBytes);
 
 #ifdef __cplusplus
 }

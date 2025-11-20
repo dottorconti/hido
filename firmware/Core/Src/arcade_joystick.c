@@ -222,3 +222,24 @@ void Joystick_SendReport(void)
         }
     }
 }
+
+/**
+ * @brief Send a 30-button HID report compatible with the Arduino Joystick library
+ *        (Report ID = 0x03). The caller supplies 4 bytes containing the packed
+ *        button bits (LSB = button 1). This function builds a 5-byte buffer
+ *        [0x03][B0][B1][B2][B3] and sends it via the HID stack.
+ */
+void Joystick_Send_Arduino30(const uint8_t *buttonBytes)
+{
+    if (hUsbDeviceFS.dev_state != USBD_STATE_CONFIGURED) return;
+
+    uint8_t report[5] = {0};
+    report[0] = 0x03; /* Report ID expected by the Arduino Joystick descriptor */
+    /* copy up to 4 bytes of button data provided by caller */
+    for (int i = 0; i < 4; i++) {
+        report[1 + i] = buttonBytes ? buttonBytes[i] : 0x00;
+    }
+
+    /* Send the report (5 bytes: ID + 4 data bytes) */
+    USBD_HID_SendReport(&hUsbDeviceFS, report, sizeof(report));
+}
