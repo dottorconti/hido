@@ -47,6 +47,8 @@ EndBSPDependencies */
 #include "usbd_hid.h"
 #include "usbd_ctlreq.h"
 #include "usb_commands.h"  /* Vendor-specific commands (bootloader, version, etc.) */
+/* Allow using a project-provided custom HID report descriptor. */
+#include "usbd_hid_custom.h"
 
 
 /** @addtogroup STM32_USB_DEVICE_LIBRARY
@@ -469,6 +471,11 @@ static uint8_t  USBD_HID_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
 
   ((USBD_HID_HandleTypeDef *)pdev->pClassData)->state = HID_IDLE;
 
+  /* Indicate HID Init reached: short LED2 pulse via one-shot timer */
+  HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
+  extern volatile uint32_t hid_led_one_shot_until;
+  hid_led_one_shot_until = HAL_GetTick() + 150;
+
   return USBD_OK;
 }
 
@@ -561,7 +568,13 @@ static uint8_t  USBD_HID_Setup(USBD_HandleTypeDef *pdev,
 #ifdef USE_KEYBOARD_MODE
             pbuf = HID_KEYBOARD_ReportDesc;
 #elif defined(USE_JOYSTICK_MODE)
-            pbuf = HID_JOYSTICK_ReportDesc;
+  /* Prefer a custom report descriptor if provided in the project; otherwise
+     fall back to the built-in HID_JOYSTICK_ReportDesc. */
+#if defined(HID_REPORT_DESC_SIZE_CUSTOM)
+  pbuf = (uint8_t *)HID_JOYSTICK_ReportDesc_Custom;
+#else
+  pbuf = HID_JOYSTICK_ReportDesc;
+#endif
 #elif defined(USE_JVS_MODE)
             pbuf = HID_JVS_ReportDesc;
 #endif

@@ -20,6 +20,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_ctlreq.h"
 #include "usbd_ioreq.h"
+/* USER ADD: include main.h for LED pins debug */
+#include "main.h"
 
 
 /** @addtogroup STM32_USBD_STATE_DEVICE_LIBRARY
@@ -653,6 +655,8 @@ static void USBD_SetConfig(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req)
         {
           pdev->dev_config = cfgidx;
           pdev->dev_state = USBD_STATE_CONFIGURED;
+          /* Toggle LED1 once to indicate SET_CONFIGURATION arrived */
+          HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
           if (USBD_SetClassConfig(pdev, cfgidx) == USBD_FAIL)
           {
             USBD_CtlError(pdev, req);

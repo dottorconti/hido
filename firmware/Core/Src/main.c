@@ -68,6 +68,13 @@
 
 /* USER CODE BEGIN PV */
 extern USBD_HandleTypeDef hUsbDeviceFS;
+volatile uint8_t composite_blink_enabled = 0;
+static uint32_t composite_blink_last = 0;
+static uint8_t composite_led_state = 0;
+/* One-shot LED timers (milliseconds since HAL_GetTick()) */
+volatile uint32_t composite_led_one_shot_until = 0;
+volatile uint32_t cdc_led_one_shot_until = 0;
+volatile uint32_t hid_led_one_shot_until = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -154,6 +161,38 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    /* Composite continuous blink: toggle LED3 every 500ms when enabled */
+    if (composite_blink_enabled)
+    {
+      uint32_t now = HAL_GetTick();
+      if ((now - composite_blink_last) >= 500)
+      {
+        composite_blink_last = now;
+        composite_led_state = !composite_led_state;
+        HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, composite_led_state ? GPIO_PIN_SET : GPIO_PIN_RESET);
+      }
+    }
+
+    /* One-shot LED timers: turn LEDs off when their timer expires */
+    {
+      uint32_t now2 = HAL_GetTick();
+      if (composite_led_one_shot_until && (now2 >= composite_led_one_shot_until))
+      {
+        composite_led_one_shot_until = 0;
+        HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
+      }
+      if (cdc_led_one_shot_until && (now2 >= cdc_led_one_shot_until))
+      {
+        cdc_led_one_shot_until = 0;
+        HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
+      }
+      if (hid_led_one_shot_until && (now2 >= hid_led_one_shot_until))
+      {
+        hid_led_one_shot_until = 0;
+        HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
+      }
+    }
+
 #ifdef GPIO_TEST_MODE
     /* GPIO Diagnostic Mode - Test all pins and print to UART */
     GPIO_ContinuousTest();

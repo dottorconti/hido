@@ -107,6 +107,10 @@
 /** Descriptor for the Usb device. */
 extern USBD_DescriptorsTypeDef FS_Desc;
 
+/* Export composite configuration descriptor so composite class can return it */
+extern uint8_t USBD_FS_CfgDesc[];
+extern const uint16_t USBD_FS_CfgDesc_len;
+
 /* USER CODE BEGIN EXPORTED_VARIABLES */
 
 /* USER CODE END EXPORTED_VARIABLES */

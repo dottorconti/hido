@@ -26,6 +26,7 @@
 #include "usbd_desc.h"
 #include "usbd_hid.h"
 #include "usbd_composite.h"
+#include "usbd_cdc.h"
 
 /* USER CODE BEGIN Includes */
 
@@ -73,8 +74,10 @@ void MX_USB_DEVICE_Init(void)
   {
     Error_Handler();
   }
-  // Register composite class (HID + CDC)
-  if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_COMPOSITE) != USBD_OK)
+  /* For this test we expose a single CDC ACM virtual COM port only.
+     Register `USBD_CDC` so the device appears as a single COM port and
+     HID/joystick interfaces are excluded. */
+  if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_CDC) != USBD_OK)
   {
     Error_Handler();
   }

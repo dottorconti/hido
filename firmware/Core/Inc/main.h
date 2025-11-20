@@ -53,6 +53,9 @@ extern "C" {
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 
+/* Enable continuous composite blink (set by composite Init) */
+extern volatile uint8_t composite_blink_enabled;
+
 /* USER CODE BEGIN EFP */
 
 /* USER CODE END EFP */

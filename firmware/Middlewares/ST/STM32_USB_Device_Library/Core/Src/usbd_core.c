@@ -19,6 +19,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_core.h"
+#include "main.h" /* USER ADD: LED pins for debug */
 
 /** @addtogroup STM32_USBD_DEVICE_LIBRARY
 * @{
@@ -262,6 +263,9 @@ USBD_StatusTypeDef USBD_ClrClassConfig(USBD_HandleTypeDef  *pdev, uint8_t cfgidx
 */
 USBD_StatusTypeDef USBD_LL_SetupStage(USBD_HandleTypeDef *pdev, uint8_t *psetup)
 {
+  /* Toggle LED2 to indicate Setup stage received (helps debug EP0 flow) */
+  HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+
   USBD_ParseSetupRequest(&pdev->request, psetup);
 
   pdev->ep0_state = USBD_EP0_SETUP;

@@ -94,7 +94,10 @@ __ALIGN_BEGIN uint8_t USBD_StringSerial[USB_SIZ_STRING_SERIAL] __ALIGN_END = {0}
 #ifdef USE_KEYBOARD_MODE
   #define USBD_PRODUCT_STRING_FS     "HIDO Arcade Keyboard"
 #elif defined(USE_JOYSTICK_MODE)
-  #define USBD_PRODUCT_STRING_FS     "HIDO Arcade Joystick"
+  /* For CDC-only test we prefer a clear product string indicating a virtual COM
+     port rather than the joystick name. Override here when building the CDC
+     test image. */
+  #define USBD_PRODUCT_STRING_FS     "HIDO Virtual COM"
 #elif defined(USE_JVS_MODE)
   #define USBD_PRODUCT_STRING_FS     "HIDO JVS Interface"
 #else
@@ -111,7 +114,7 @@ __ALIGN_BEGIN uint8_t USBD_StringSerial[USB_SIZ_STRING_SERIAL] __ALIGN_END = {0}
 
 /* Ensure HID OUT endpoint and report size macros exist (used in descriptor) */
 #ifndef HID_CUSTOM_REPORT_DESC_SIZE
-#define HID_CUSTOM_REPORT_DESC_SIZE   0x3F
+#define HID_CUSTOM_REPORT_DESC_SIZE   HID_REPORT_DESC_SIZE
 #endif
 #ifndef HID_EPOUT_ADDR
 #define HID_EPOUT_ADDR                0x01
@@ -262,11 +265,11 @@ __ALIGN_BEGIN uint8_t USBD_FS_CfgDesc[]  __ALIGN_END =
   /* Configuration Descriptor */
   0x09,   /* bLength: Configuration Descriptor size */
   USB_DESC_TYPE_CONFIGURATION,      /* bDescriptorType: Configuration */
-  0x6D, 0x00, /* wTotalLength: 109 bytes (updated for HID + CDC) */
+  0x66, 0x00, /* wTotalLength: 102 bytes (updated for HID + CDC, HID OUT removed) */
   0x03,   /* bNumInterfaces: 3 interfaces (HID + CDC comm + CDC data) */
   0x01,   /* bConfigurationValue: Configuration value */
   0x00,   /* iConfiguration: Index of string descriptor describing the configuration */
-  0xE0,   /* bmAttributes: bus powered, remote wakeup */
+  0x80,   /* bmAttributes: Bus powered (clear self-powered + remote wakeup bits) */
   0x32,   /* MaxPower 100 mA: this current is used for detecting Vbus */
 
   /*---------------------------------------------------------------------------*/
@@ -275,7 +278,7 @@ __ALIGN_BEGIN uint8_t USBD_FS_CfgDesc[]  __ALIGN_END =
   USB_DESC_TYPE_INTERFACE,  /* bDescriptorType: Interface descriptor type */
   0x00,   /* bInterfaceNumber: 0 */
   0x00,   /* bAlternateSetting: Alternate setting */
-  0x02,   /* bNumEndpoints */
+  0x01,   /* bNumEndpoints: only IN endpoint for HID (we don't use HID OUT) */
   0x03,   /* bInterfaceClass: HID */
   0x00,   /* bInterfaceSubClass : 1=BOOT, 0=no boot */
   0x00,   /* nInterfaceProtocol : 0=none, 1=keyboard, 2=mouse */
@@ -301,14 +304,7 @@ __ALIGN_BEGIN uint8_t USBD_FS_CfgDesc[]  __ALIGN_END =
   0x00,
   HID_FS_BINTERVAL,          /* bInterval: */
 
-  /* Endpoint Descriptor OUT (standard) */
-  0x07,   /* bLength: Endpoint Descriptor size */
-  USB_DESC_TYPE_ENDPOINT, /* bDescriptorType: */
-  HID_EPOUT_ADDR,    /* bEndpointAddress: Endpoint Address (OUT) */
-  0x03,   /* bmAttributes: Interrupt endpoint */
-  HID_EPOUT_SIZE,    /* wMaxPacketSize: */
-  0x00,
-  HID_FS_BINTERVAL,          /* bInterval: */
+
 
   /*---------------------------------------------------------------------------*/
   /* Interface 1: CDC Communication Interface */
@@ -371,6 +367,9 @@ __ALIGN_BEGIN uint8_t USBD_FS_CfgDesc[]  __ALIGN_END =
   0x00, /* bInterval: */
 };
 
+/* Provide the descriptor length for external users (composite class) */
+const uint16_t USBD_FS_CfgDesc_len = sizeof(USBD_FS_CfgDesc);
+
 /**
   * @brief  Return the manufacturer string descriptor
   * @param  speed : Current device speed
@@ -395,9 +394,26 @@ uint8_t * USBD_FS_SerialStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
   UNUSED(speed);
   *length = USB_SIZ_STRING_SERIAL;
 
+  /* Prepare USB string descriptor header (length + descriptor type) */
+  USBD_StringSerial[0] = USB_SIZ_STRING_SERIAL; /* bLength */
+  USBD_StringSerial[1] = USB_DESC_TYPE_STRING;  /* bDescriptorType */
+
   /* Update the serial number string descriptor with the data from the unique
-   * ID */
+   * ID (fills UTF-16LE chars starting at offset 2) */
   Get_SerialNum();
+
+  /* If Get_SerialNum didn't produce a valid serial (all zeros), provide a
+   * deterministic fallback serial so Windows won't report a missing string. */
+  if (USBD_StringSerial[2] == 0)
+  {
+    /* Fallback ASCII serial: "HIDO0001" -> UTF-16LE starting at offset 2 */
+    const char *fallback = "HIDO0001";
+    for (uint8_t i = 0; i < 8; i++)
+    {
+      USBD_StringSerial[2 + i*2] = (uint8_t)fallback[i];
+      USBD_StringSerial[2 + i*2 + 1] = 0x00;
+    }
+  }
   /* USER CODE BEGIN USBD_FS_SerialStrDescriptor */
   
   /* USER CODE END USBD_FS_SerialStrDescriptor */
