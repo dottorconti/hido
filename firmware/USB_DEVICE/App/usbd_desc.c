@@ -87,22 +87,22 @@ __ALIGN_BEGIN uint8_t USBD_StringSerial[USB_SIZ_STRING_SERIAL] __ALIGN_END = {0}
 
 #define USBD_VID     1155
 #define USBD_LANGID_STRING     1040
-#define USBD_MANUFACTURER_STRING     "HIDO Project"
+#define USBD_MANUFACTURER_STRING     "HIDO"
 #define USBD_PID_FS     22315
 
+/* Product string per modalità con indicazione composito (HID+CDC) */
 #ifdef USE_KEYBOARD_MODE
-  #define USBD_PRODUCT_STRING_FS     "HIDO Arcade Keyboard"
+  #define USBD_PRODUCT_STRING_FS     "HIDO Arcade Keyboard (Composite)"
 #elif defined(USE_JOYSTICK_MODE)
-  #define USBD_PRODUCT_STRING_FS     "HIDO Arcade Joystick"
+  #define USBD_PRODUCT_STRING_FS     "HIDO Arcade Joystick (Composite)"
 #elif defined(USE_JVS_MODE)
-  #define USBD_PRODUCT_STRING_FS     "HIDO JVS Interface"
+  #define USBD_PRODUCT_STRING_FS     "HIDO JVS Interface (Composite)"
 #else
-  #define USBD_PRODUCT_STRING_FS     "HIDO HID Device"
+  #define USBD_PRODUCT_STRING_FS     "HIDO HID Device (Composite)"
 #endif
 
 #define USBD_CONFIGURATION_STRING_FS     "HID Config"
-#define USBD_INTERFACE_STRING_FS     "HID Interface"
-#define USBD_INTERFACE2_STRING_FS    "HIDO Config"
+#define USBD_INTERFACE_STRING_FS     "HID+CDC"
 
 
 /* HID RAW rimosso */
@@ -283,7 +283,7 @@ __ALIGN_BEGIN uint8_t USBD_FS_CfgDesc[]  __ALIGN_END =
   0x09, HID_DESCRIPTOR_TYPE,
   0x11, 0x01, 0x00,
   0x01, 0x22,
-  0x01, 0x00, /* placeholder report len =1 */
+  (uint8_t)(HID_REPORT_DESC_SIZE & 0xFF), (uint8_t)((HID_REPORT_DESC_SIZE >> 8) & 0xFF), /* wDescriptorLength = active HID report size */
   /* Endpoint IN */
   0x07, USB_DESC_TYPE_ENDPOINT,
   HID_EPIN_ADDR, 0x03,
@@ -361,12 +361,7 @@ uint8_t * USBD_FS_InterfaceStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *leng
   return USBD_StrDesc;
 }
 
-// New: interface 1 (HIDO Config)
-uint8_t * USBD_FS_Interface2StrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
-{
-  USBD_GetString((uint8_t *)USBD_INTERFACE2_STRING_FS, USBD_StrDesc, length);
-  return USBD_StrDesc;
-}
+/* Removed unused second interface string descriptor to reduce requests */
 
 /**
   * @brief  Create the serial number string descriptor
@@ -375,22 +370,15 @@ uint8_t * USBD_FS_Interface2StrDescriptor(USBD_SpeedTypeDef speed, uint16_t *len
   */
 static void Get_SerialNum(void)
 {
-  uint32_t deviceserial0;
-  uint32_t deviceserial1;
-  uint32_t deviceserial2;
+  uint32_t deviceserial0 = *(uint32_t *) DEVICE_ID1;
+  uint32_t deviceserial1 = *(uint32_t *) DEVICE_ID2;
+  uint32_t deviceserial2 = *(uint32_t *) DEVICE_ID3;
 
-  /* Initialize string descriptor header */
   USBD_StringSerial[0] = USB_SIZ_STRING_SERIAL;
   USBD_StringSerial[1] = USB_DESC_TYPE_STRING;
 
-  deviceserial0 = *(uint32_t *) DEVICE_ID1;
-  deviceserial1 = *(uint32_t *) DEVICE_ID2;
-  deviceserial2 = *(uint32_t *) DEVICE_ID3;
-
   deviceserial0 += deviceserial2;
-
-  if (deviceserial0 != 0)
-  {
+  if (deviceserial0 != 0) {
     IntToUnicode(deviceserial0, &USBD_StringSerial[2], 8);
     IntToUnicode(deviceserial1, &USBD_StringSerial[18], 4);
   }

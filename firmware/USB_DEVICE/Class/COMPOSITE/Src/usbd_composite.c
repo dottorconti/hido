@@ -66,20 +66,26 @@ static uint8_t USBD_COMPOSITE_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
   hcomp->pCDCClassData = NULL;
   /* Nessun HID RAW */
   
-  /* Initialize HID class - swap pClassData temporarily */
+  /* Initialize HID class FIRST - swap pClassData temporarily */
   pdev->pClassData = hcomp->pHIDClassData;
   if (USBD_HID.Init(pdev, cfgidx) != USBD_OK) ret = USBD_FAIL;
   hcomp->pHIDClassData = pdev->pClassData; /* Save HID's allocated data */
   
   /* HID RAW disabilitato */
   
-  /* Initialize CDC class */
+  /* Initialize CDC class SECOND (defers PrepareReceive) */
   pdev->pClassData = hcomp->pCDCClassData;
   if (USBD_CDC_Init(pdev, cfgidx) != USBD_OK) ret = USBD_FAIL;
   hcomp->pCDCClassData = pdev->pClassData;
   
   /* Restore composite class data pointer */
   pdev->pClassData = hcomp;
+  
+  /* CRITICAL POST-INIT: Now that all endpoints opened safely, arm CDC OUT.
+     Calling USBD_CDC_StartReception after both HID and CDC Init completed
+     prevents race condition where CDC PrepareReceive corrupts HID state. */
+  USBD_CDC_StartReception(pdev, hcomp->pCDCClassData);
+  
   return ret;
 }
 
@@ -112,17 +118,36 @@ static uint8_t USBD_COMPOSITE_Setup(USBD_HandleTypeDef *pdev, USBD_SetupReqTyped
 {
   USBD_COMPOSITE_HandleTypeDef *hcomp = (USBD_COMPOSITE_HandleTypeDef *)pdev->pClassData;
   uint8_t ret = USBD_OK;
+  uint8_t recipient = req->bmRequest & 0x1FU;
+  uint16_t wIndex = req->wIndex & 0xFFU;
   
-  /* Try CDC first - restore CDC class data */
+  /* Route by interface number or EP address to avoid cross-class pollution */
+  if (recipient == 0x01U) { /* INTERFACE */
+    if (wIndex == 1U || wIndex == 2U) {
+      /* IF1=CDC Control, IF2=CDC Data → route to CDC */
+      pdev->pClassData = hcomp->pCDCClassData;
+      ret = USBD_CDC_Setup(pdev, req);
+      hcomp->pCDCClassData = pdev->pClassData;
+      pdev->pClassData = hcomp;
+      return ret;
+    } else if (wIndex == 0U) {
+      /* IF0=HID → route to HID */
+      pdev->pClassData = hcomp->pHIDClassData;
+      ret = USBD_HID.Setup(pdev, req);
+      hcomp->pHIDClassData = pdev->pClassData;
+      pdev->pClassData = hcomp;
+      return ret;
+    }
+  }
+  
+  /* Fallback: try CDC first (handles class-specific on IF1/IF2) */
   pdev->pClassData = hcomp->pCDCClassData;
   ret = USBD_CDC_Setup(pdev, req);
-  hcomp->pCDCClassData = pdev->pClassData; /* Save any updates */
-  pdev->pClassData = hcomp; /* Restore composite pointer */
+  hcomp->pCDCClassData = pdev->pClassData;
+  pdev->pClassData = hcomp;
   if (ret == USBD_OK) return USBD_OK;
   
-  /* Nessun RAW */
-  
-  /* Try normal HID */
+  /* Then try HID */
   pdev->pClassData = hcomp->pHIDClassData;
   ret = USBD_HID.Setup(pdev, req);
   hcomp->pHIDClassData = pdev->pClassData;
@@ -135,17 +160,19 @@ static uint8_t USBD_COMPOSITE_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum)
 {
   USBD_COMPOSITE_HandleTypeDef *hcomp = (USBD_COMPOSITE_HandleTypeDef *)pdev->pClassData;
   
-  /* Delegate to CDC */
-  pdev->pClassData = hcomp->pCDCClassData;
-  USBD_CDC_DataIn(pdev, epnum);
-  hcomp->pCDCClassData = pdev->pClassData;
-  
-  /* Nessun RAW */
-  
-  /* Delegate to normal HID (handles EP 0x81) */
-  pdev->pClassData = hcomp->pHIDClassData;
-  USBD_HID.DataIn(pdev, epnum);
-  hcomp->pHIDClassData = pdev->pClassData;
+  /* Route by EP number (without direction bit): 0x01=HID, 0x04=CDC Data IN, 0x03=CDC CMD */
+  if (epnum == 0x01U) {
+    /* HID IN endpoint (EP1) */
+    pdev->pClassData = hcomp->pHIDClassData;
+    USBD_HID.DataIn(pdev, epnum);
+    hcomp->pHIDClassData = pdev->pClassData;
+  } else if (epnum == 0x04U || epnum == 0x03U) {
+    /* CDC endpoints (EP4 data IN, EP3 command/notification) */
+    pdev->pClassData = hcomp->pCDCClassData;
+    USBD_CDC_DataIn(pdev, epnum);
+    hcomp->pCDCClassData = pdev->pClassData;
+  }
+  /* Ignore unknown EP */
   
   pdev->pClassData = hcomp;
   return USBD_OK;
@@ -155,17 +182,14 @@ static uint8_t USBD_COMPOSITE_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum)
 {
   USBD_COMPOSITE_HandleTypeDef *hcomp = (USBD_COMPOSITE_HandleTypeDef *)pdev->pClassData;
   
-  /* Delegate to CDC (handles EP 0x03) */
-  pdev->pClassData = hcomp->pCDCClassData;
-  USBD_CDC_DataOut(pdev, epnum);
-  hcomp->pCDCClassData = pdev->pClassData;
-  
-  /* Nessun RAW */
-  
-  /* Delegate to normal HID */
-  pdev->pClassData = hcomp->pHIDClassData;
-  USBD_HID.DataOut(pdev, epnum);
-  hcomp->pHIDClassData = pdev->pClassData;
+  /* Route by EP: 0x03=CDC Data OUT */
+  if (epnum == 0x03U) {
+    /* CDC OUT endpoint */
+    pdev->pClassData = hcomp->pCDCClassData;
+    USBD_CDC_DataOut(pdev, epnum);
+    hcomp->pCDCClassData = pdev->pClassData;
+  }
+  /* HID has no OUT endpoints in this config, ignore other EP */
   
   pdev->pClassData = hcomp;
   return USBD_OK;
@@ -173,22 +197,15 @@ static uint8_t USBD_COMPOSITE_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum)
 
 static uint8_t *USBD_COMPOSITE_GetFSConfigDescriptor(uint16_t *length)
 {
-  /* If a full configuration descriptor with CDC is available, return it
-     so the host sees HID + HID_RAW + CDC interfaces consistently with
-     the PMA allocations and class initialization. Otherwise fall back
-     to the original FS descriptor (HID-only variant). */
+  /* Return full composite descriptor (HID + CDC) */
   if (USBD_FULL_FS_CfgDescSize != 0)
   {
-    /* Ensure the wTotalLength field in the descriptor matches the actual
-       size. The wTotalLength is at offset 2 (little-endian). Update it
-       here so hard-coded descriptor arrays remain consistent with sizeof. */
     uint16_t total = USBD_FULL_FS_CfgDescSize;
     USBD_FULL_FS_CfgDesc[2] = (uint8_t)(total & 0xFFU);
     USBD_FULL_FS_CfgDesc[3] = (uint8_t)((total >> 8) & 0xFFU);
     *length = USBD_FULL_FS_CfgDescSize;
     return USBD_FULL_FS_CfgDesc;
   }
-
   *length = USBD_FS_CfgDescSize;
   return USBD_FS_CfgDesc;
 }
@@ -217,3 +234,26 @@ static uint8_t *USBD_COMPOSITE_GetUsrStrDescriptor(USBD_HandleTypeDef *pdev, uin
   return NULL;
 }
 #endif
+
+/* Wrapper function for application to send HID reports through composite.
+   CRITICAL: arcade_joystick.c calls USBD_HID_SendReport, but when composite
+   is active, pdev->pClassData points to COMPOSITE handle, NOT HID handle.
+   This causes hhid->state check to access garbage memory and block transmission.
+   Solution: provide wrapper that switches pClassData temporarily. */
+uint8_t USBD_COMPOSITE_HID_SendReport(USBD_HandleTypeDef *pdev, uint8_t *report, uint16_t len)
+{
+  USBD_COMPOSITE_HandleTypeDef *hcomp = (USBD_COMPOSITE_HandleTypeDef *)pdev->pClassData;
+  if (hcomp == NULL || hcomp->pHIDClassData == NULL) return USBD_FAIL;
+  
+  /* Temporarily switch pClassData to HID handle */
+  pdev->pClassData = hcomp->pHIDClassData;
+  
+  /* Call real HID SendReport (now hhid pointer will be valid) */
+  extern uint8_t USBD_HID_SendReport(USBD_HandleTypeDef *pdev, uint8_t *report, uint16_t len);
+  uint8_t ret = USBD_HID_SendReport(pdev, report, len);
+  
+  /* Restore composite handle */
+  pdev->pClassData = hcomp;
+  
+  return ret;
+}

@@ -15,6 +15,7 @@
 
 #include "arcade_joystick.h"
 #include "usbd_hid.h"
+#include "usbd_composite.h"  /* For USBD_COMPOSITE_HID_SendReport wrapper */
 #include "gpio.h"
 #include <string.h>
 
@@ -98,15 +99,11 @@ static const JoystickButtonMapping_t button_map[] = {
 
 #define BUTTON_MAP_SIZE (sizeof(button_map) / sizeof(button_map[0]))
 
-/* Button states for debouncing */
-/* Debounce implementazione migliorata:
- * sample_state: ultimo campione grezzo letto
- * stable_state: stato stabile usato per costruire il report
- * change_time: tick in cui il campione è cambiato; se resta diverso per DEBOUNCE_TIME_MS diventa stabile.
+/* Debounce semplice: usa stato precedente e un singolo timer per evitare rimbalzi
+ * Nota: per ripristino temporaneo, applichiamo lettura diretta senza ritardi di promozione.
  */
-static uint8_t sample_state[BUTTON_MAP_SIZE];
-static uint8_t stable_state[BUTTON_MAP_SIZE];
-static uint32_t change_time[BUTTON_MAP_SIZE];
+static uint8_t prev_state[BUTTON_MAP_SIZE];
+static uint32_t last_change_ms[BUTTON_MAP_SIZE];
 
 /**
   * @brief  Initialize joystick system
@@ -132,9 +129,8 @@ void Joystick_Init(void)
     
     /* Clear debounce state */
     for (uint8_t i = 0; i < BUTTON_MAP_SIZE; i++) {
-        sample_state[i] = 0;
-        stable_state[i] = 0;
-        change_time[i] = 0;
+        prev_state[i] = 0;
+        last_change_ms[i] = 0;
     }
 }
 
@@ -154,7 +150,7 @@ void Joystick_ProcessButtons(void)
         player_activity[player] = false;
     }
     
-    /* Scan all mapped buttons per debounce migliorato */
+    /* Scan all mapped buttons (ripristino semplice, senza promozione ritardata) */
     for (uint8_t i = 0; i < BUTTON_MAP_SIZE; i++) {
         const JoystickButtonMapping_t* mapping = &button_map[i];
         
@@ -162,22 +158,18 @@ void Joystick_ProcessButtons(void)
         uint8_t player_idx = mapping->joystick_id - 1;
         if (player_idx >= 2) continue;  /* Skip invalid IDs */
         
-        /* Read GPIO pin */
+        /* Read GPIO pin (stato diretto) */
         GPIO_PinState pin_state = HAL_GPIO_ReadPin(mapping->port, mapping->pin);
-        bool raw = (mapping->active_low) ? (pin_state == GPIO_PIN_RESET) : (pin_state == GPIO_PIN_SET);
+        bool pressed = (mapping->active_low) ? (pin_state == GPIO_PIN_RESET) : (pin_state == GPIO_PIN_SET);
 
-        if (raw != sample_state[i]) {
-            sample_state[i] = raw;
-            change_time[i] = current_time; /* start debounce timer */
-        } else {
-            /* Same raw state: check if needs promotion to stable */
-            if (stable_state[i] != raw && (current_time - change_time[i]) >= DEBOUNCE_TIME_MS) {
-                stable_state[i] = raw;
-            }
+        /* Debounce leggero: se cambia, aggiorna timestamp; ma usa subito il nuovo stato */
+        if ((uint8_t)pressed != prev_state[i]) {
+            prev_state[i] = (uint8_t)pressed;
+            last_change_ms[i] = current_time;
         }
 
-        /* Update joystick state if stable pressed */
-        if (stable_state[i]) {
+        /* Update joystick state se premuto (senza ritardi) */
+        if (pressed) {
             player_activity[player_idx] = true;  // Mark activity for LED blink
             
             if (mapping->button_num == 255) {
@@ -225,7 +217,8 @@ void Joystick_SendReport(void)
                 /* Send only if report changed since last sent - reduces USB traffic
                  * and avoids confusing the host with repeated identical reports. */
                 if (memcmp(&sendbuf, &last_sent_report[report_idx], sizeof(JoystickReport_t)) != 0) {
-                    USBD_HID_SendReport(&hUsbDeviceFS, (uint8_t*)&sendbuf, sizeof(JoystickReport_t));
+                    /* Use composite wrapper to correctly switch pClassData before SendReport */
+                    USBD_COMPOSITE_HID_SendReport(&hUsbDeviceFS, (uint8_t*)&sendbuf, sizeof(JoystickReport_t));
                     memcpy(&last_sent_report[report_idx], &sendbuf, sizeof(JoystickReport_t));
                 }
         }

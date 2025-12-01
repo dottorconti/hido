@@ -335,6 +335,10 @@ USBD_StatusTypeDef USBD_LL_Init(USBD_HandleTypeDef *pdev)
   /* USER CODE END EndPoint_Configuration */
   /* USER CODE BEGIN EndPoint_Configuration_HID */
   HAL_PCDEx_PMAConfig((PCD_HandleTypeDef*)pdev->pData , 0x81 , PCD_SNG_BUF, 0x100);
+  /* CDC endpoints PMA configuration */
+  HAL_PCDEx_PMAConfig((PCD_HandleTypeDef*)pdev->pData , 0x03 , PCD_SNG_BUF, 0x140);
+  HAL_PCDEx_PMAConfig((PCD_HandleTypeDef*)pdev->pData , 0x84 , PCD_SNG_BUF, 0x180);
+  HAL_PCDEx_PMAConfig((PCD_HandleTypeDef*)pdev->pData , 0x83 , PCD_SNG_BUF, 0x1C0);
   /* USER CODE END EndPoint_Configuration_HID */
   return USBD_OK;
 }
@@ -586,10 +590,22 @@ void USBD_LL_Delay(uint32_t Delay)
   * @param  size: Size of allocated memory
   * @retval None
   */
+/* Enhanced allocator to support multiple class data blocks (COMPOSITE + HID + CDC).
+   Implements a simple bump-pointer allocator over a static pool. */
 void *USBD_static_malloc(uint32_t size)
 {
-  static uint32_t mem[(sizeof(USBD_HID_HandleTypeDef)/4)+1];/* On 32-bit boundary */
-  return mem;
+  /* Pool sized to hold up to 3 medium class structures (approx < 192B each). */
+  #define USBD_STATIC_POOL_SIZE 600
+  static uint8_t pool[USBD_STATIC_POOL_SIZE];
+  static uint32_t offset = 0U;
+  /* 4-byte align size */
+  uint32_t aligned = (size + 3U) & ~3U;
+  if (aligned > (USBD_STATIC_POOL_SIZE - offset)) {
+    return NULL; /* Out of memory */
+  }
+  void *ptr = &pool[offset];
+  offset += aligned;
+  return ptr;
 }
 
 /**
@@ -599,7 +615,8 @@ void *USBD_static_malloc(uint32_t size)
   */
 void USBD_static_free(void *p)
 {
-
+  /* No-op: pool is monotonic; could implement reset on USB re-init if needed. */
+  UNUSED(p);
 }
 
 /**

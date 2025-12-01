@@ -13,4 +13,7 @@ typedef struct
 
 extern USBD_ClassTypeDef USBD_COMPOSITE;
 
+/* Wrapper to send HID report through composite (switches pClassData correctly) */
+uint8_t USBD_COMPOSITE_HID_SendReport(USBD_HandleTypeDef *pdev, uint8_t *report, uint16_t len);
+
 #endif /* __USBD_COMPOSITE_H__ */
