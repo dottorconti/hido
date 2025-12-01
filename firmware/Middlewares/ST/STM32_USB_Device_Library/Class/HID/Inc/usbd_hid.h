@@ -54,8 +54,9 @@ extern "C" {
   #define HID_EPIN_SIZE                 0x06U  // 5 bytes: Report ID + 2 axes + 2 bytes buttons
   #define HID_REPORT_DESC_SIZE          102U   // Dual joystick (2 Application Collections = 2 devices)
 #elif defined(USE_JVS_MODE)
-  #define HID_EPIN_SIZE                 0x40U  // 64 bytes for JVS
-  #define HID_REPORT_DESC_SIZE          0U     // JVS uses custom protocol
+  #define HID_EPIN_SIZE                 0x40U  /* 64 bytes for JVS */
+  /* Usiamo 1 byte placeholder per evitare lunghezza zero nel descrittore. */
+  #define HID_REPORT_DESC_SIZE          1U
 #else
   #error "Please define one mode: USE_KEYBOARD_MODE, USE_JOYSTICK_MODE, or USE_JVS_MODE"
 #endif

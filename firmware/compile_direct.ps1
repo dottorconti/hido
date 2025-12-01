@@ -53,7 +53,9 @@ $INCLUDES = @(
     "-IUSB_DEVICE/App",
     "-IUSB_DEVICE/Target",
     "-IMiddlewares/ST/STM32_USB_Device_Library/Core/Inc",
-    "-IMiddlewares/ST/STM32_USB_Device_Library/Class/HID/Inc"
+    "-IMiddlewares/ST/STM32_USB_Device_Library/Class/HID/Inc",
+    "-IMiddlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc",
+    "-IUSB_DEVICE/Class/COMPOSITE/Inc"
 )
 $CFLAGS = "$MCU $DEFS $($INCLUDES -join ' ') -Og -Wall -fdata-sections -ffunction-sections -g -gdwarf-2"
 $LDFLAGS = "$MCU -specs=nano.specs -TSTM32F102RBTX_FLASH.ld -Wl,--gc-sections -Wl,-Map=$BUILD_DIR/hido.map"
@@ -76,16 +78,19 @@ $C_SOURCES = @(
     "Core/Src/dfu_bootloader.c",
     "Core/Src/jvs_protocol.c",
     "Core/Src/usbd_hid_custom.c",
-    "Core/Src/usbd_hid_raw.c",
     "Core/Src/gpio_test.c",
     "Core/Src/flash_config.c",
     "USB_DEVICE/App/usb_device.c",
     "USB_DEVICE/App/usbd_desc.c",
+    "USB_DEVICE/App/usbd_cdc_if.c",
+    "USB_DEVICE/App/usbd_full_desc.c",
     "USB_DEVICE/Target/usbd_conf.c",
     "Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c",
     "Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c",
     "Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c",
     "Middlewares/ST/STM32_USB_Device_Library/Class/HID/Src/usbd_hid.c",
+    "Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.c",
+    "USB_DEVICE/Class/COMPOSITE/Src/usbd_composite.c",
     "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c",
     "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc.c",
     "Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc_ex.c",

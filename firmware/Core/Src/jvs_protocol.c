@@ -35,7 +35,7 @@ static JVS_Packet_t rx_packet = {0};
 static JVS_Packet_t tx_packet = {0};
 
 /* Reception buffer */
-static uint8_t rx_buffer[JVS_MAX_PACKET_SIZE];
+/* rx_buffer rimosso perché inutilizzato: evitare warning */
 static uint16_t rx_index = 0;
 static bool escape_next = false;
 

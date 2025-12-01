@@ -99,8 +99,14 @@ static const JoystickButtonMapping_t button_map[] = {
 #define BUTTON_MAP_SIZE (sizeof(button_map) / sizeof(button_map[0]))
 
 /* Button states for debouncing */
-static uint32_t button_state[BUTTON_MAP_SIZE];      /* Current state */
-static uint32_t button_last_time[BUTTON_MAP_SIZE];  /* Last change time */
+/* Debounce implementazione migliorata:
+ * sample_state: ultimo campione grezzo letto
+ * stable_state: stato stabile usato per costruire il report
+ * change_time: tick in cui il campione è cambiato; se resta diverso per DEBOUNCE_TIME_MS diventa stabile.
+ */
+static uint8_t sample_state[BUTTON_MAP_SIZE];
+static uint8_t stable_state[BUTTON_MAP_SIZE];
+static uint32_t change_time[BUTTON_MAP_SIZE];
 
 /**
   * @brief  Initialize joystick system
@@ -126,8 +132,9 @@ void Joystick_Init(void)
     
     /* Clear debounce state */
     for (uint8_t i = 0; i < BUTTON_MAP_SIZE; i++) {
-        button_state[i] = 0;
-        button_last_time[i] = 0;
+        sample_state[i] = 0;
+        stable_state[i] = 0;
+        change_time[i] = 0;
     }
 }
 
@@ -147,7 +154,7 @@ void Joystick_ProcessButtons(void)
         player_activity[player] = false;
     }
     
-    /* Scan all mapped buttons for both players */
+    /* Scan all mapped buttons per debounce migliorato */
     for (uint8_t i = 0; i < BUTTON_MAP_SIZE; i++) {
         const JoystickButtonMapping_t* mapping = &button_map[i];
         
@@ -157,18 +164,20 @@ void Joystick_ProcessButtons(void)
         
         /* Read GPIO pin */
         GPIO_PinState pin_state = HAL_GPIO_ReadPin(mapping->port, mapping->pin);
-        bool is_pressed = (mapping->active_low) ? (pin_state == GPIO_PIN_RESET) : (pin_state == GPIO_PIN_SET);
-        
-        /* Debouncing */
-        if (is_pressed != button_state[i]) {
-            if ((current_time - button_last_time[i]) >= DEBOUNCE_TIME_MS) {
-                button_state[i] = is_pressed;
-                button_last_time[i] = current_time;
+        bool raw = (mapping->active_low) ? (pin_state == GPIO_PIN_RESET) : (pin_state == GPIO_PIN_SET);
+
+        if (raw != sample_state[i]) {
+            sample_state[i] = raw;
+            change_time[i] = current_time; /* start debounce timer */
+        } else {
+            /* Same raw state: check if needs promotion to stable */
+            if (stable_state[i] != raw && (current_time - change_time[i]) >= DEBOUNCE_TIME_MS) {
+                stable_state[i] = raw;
             }
         }
-        
-        /* Update joystick state if button is pressed */
-        if (button_state[i]) {
+
+        /* Update joystick state if stable pressed */
+        if (stable_state[i]) {
             player_activity[player_idx] = true;  // Mark activity for LED blink
             
             if (mapping->button_num == 255) {
@@ -189,7 +198,7 @@ void Joystick_ProcessButtons(void)
     }
     
     /* Mask buttons to ensure only 13 bits are used (bits 0-12), bits 13-15 must be 0 */
-    joystick_report[0].buttons &= 0x1FFF;  // 0001111111111111 = mask for 13 bits
+    joystick_report[0].buttons &= 0x1FFF;  // mask 13 bit
     joystick_report[1].buttons &= 0x1FFF;
     
     /* LED blink for activity - Player 1: LED1, Player 2: LED2 */
